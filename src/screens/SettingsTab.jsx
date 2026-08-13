@@ -1,49 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { HelpCircle, Send, ChevronRight, ShieldCheck, Crown, Check, Trophy, School, Gift } from "lucide-react";
-import { ACCENT_FROM } from "../theme";
+import { HelpCircle, Send, ChevronRight, ShieldCheck, Crown, Check, Trophy, Gift } from "lucide-react";
 import { useTheme } from "../ThemeContext";
 import { useFontSize } from "../FontSizeContext";
 import { api } from "../api";
 import { useSettings, useFeature } from "../SettingsContext";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import { Card, ListRow } from "../components/ui";
 
 function PremiumRow({ onClick }) {
   const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left shadow-sm active:scale-[0.99] transition-transform"
-      style={{
-        background: "linear-gradient(90deg, #F5C542, #E0A62E, #C9982B)",
-      }}
+      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left bg-warning text-accent-ink active:scale-[0.99] transition-transform"
     >
       <div className="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center shrink-0">
-        <Crown size={18} color="#3B2C00" />
+        <Crown size={18} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-extrabold text-[#3B2C00] text-sm">
-          {t("settings.premium")}
-        </p>
-        <p className="text-[#5C4600] text-xs">{t("settings.premiumSubtitle")}</p>
+        <p className="font-extrabold text-sm">{t("settings.premium")}</p>
+        <p className="text-xs opacity-80">{t("settings.premiumSubtitle")}</p>
       </div>
-      <ChevronRight size={18} color="#3B2C00" />
-    </button>
-  );
-}
-
-function SettingsRow({ icon: Icon, label, value, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5 text-left active:scale-[0.99] transition-transform"
-    >
-      <Icon size={18} color="var(--icon-muted)" />
-      <span className="flex-1 font-medium text-text-main text-sm">
-        {label}
-      </span>
-      {value && <span className="text-text-muted text-sm">{value}</span>}
-      <ChevronRight size={18} color="var(--chevron)" />
+      <ChevronRight size={18} />
     </button>
   );
 }
@@ -66,8 +45,7 @@ function LeaderboardToggle() {
         if (!cancelled) setVisible(res.showOnLeaderboard);
       })
       .catch(() => {
-        // Sozlama yuklanmasa, tugma ko'rsatilmaydi (holatni bilmasdan
-        // noto'g'ri qiymat ko'rsatgandan ko'ra yaxshiroq)
+        // Sozlama yuklanmasa, tugma ko'rsatilmaydi
       });
     return () => {
       cancelled = true;
@@ -91,73 +69,52 @@ function LeaderboardToggle() {
   }
 
   return (
-    <button
-      onClick={toggle}
-      disabled={saving}
-      className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5 text-left active:scale-[0.99] transition-transform disabled:opacity-60"
-    >
-      <Trophy size={18} color="var(--icon-muted)" />
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-text-main text-sm">
-          {t("settings.showOnLeaderboard")}
-        </p>
-        <p className="text-text-muted text-xs mt-0.5 leading-snug">
-          {t("settings.showOnLeaderboardHint")}
-        </p>
+    <Card onClick={toggle} disabled={saving} className={`px-4 py-3.5 ${saving ? "opacity-60" : ""}`}>
+      <div className="flex items-center gap-3">
+        <Trophy size={18} className="text-soft" />
+        <div className="flex-1 min-w-0 text-left">
+          <p className="font-medium text-main text-sm">{t("settings.showOnLeaderboard")}</p>
+          <p className="text-muted text-xs mt-0.5 leading-snug">
+            {t("settings.showOnLeaderboardHint")}
+          </p>
+        </div>
+        <span className={`w-11 h-6 rounded-full p-0.5 shrink-0 transition-colors ${visible ? "bg-accent" : "bg-sunken"}`}>
+          <span
+            className="block w-5 h-5 rounded-full bg-white shadow transition-transform"
+            style={{ transform: visible ? "translateX(20px)" : "translateX(0)" }}
+          />
+        </span>
       </div>
-      <span
-        className="w-11 h-6 rounded-full p-0.5 shrink-0 transition-colors"
-        style={{ backgroundColor: visible ? ACCENT_FROM : "var(--border-card)" }}
-      >
-        <span
-          className="block w-5 h-5 rounded-full bg-white shadow transition-transform"
-          style={{ transform: visible ? "translateX(20px)" : "translateX(0)" }}
-        />
-      </span>
-    </button>
+    </Card>
   );
 }
 
-// Light / Dark uchun katta tanlov tugmasi (mockup'dagi ikkita pill kabi)
+// Light / Dark uchun katta tanlov tugmasi
 function ThemeModePill({ item, isActive, onClick }) {
-  const isDarkPill = item.key === "dark";
   return (
     <button
       onClick={onClick}
-      className="flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center transition-transform active:scale-[0.98]"
-      style={{
-        background: isDarkPill ? "#18181F" : "#FFFFFF",
-        color: isDarkPill ? "#FFFFFF" : "#111827",
-        border: isActive
-          ? `2px solid ${item.accentFrom}`
-          : "2px solid var(--border-card)",
-      }}
+      className={`flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center transition-transform active:scale-[0.98] border-2 ${
+        isActive ? "border-accent" : "border-line"
+      }`}
+      style={{ background: item.vars["--bg-app"], color: item.vars["--text-primary"] }}
     >
       {item.label}
     </button>
   );
 }
 
-// Qolgan ranglar uchun ro'yxat qatori — chapda to'liq rang doirasi, o'ngda nom,
-// tanlangan bo'lsa oxirida check, premium bo'lsa toj belgisi
+// Qolgan ranglar uchun ro'yxat qatori
 function ThemeColorRow({ item, isActive, isLocked, onClick }) {
   return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-3 py-2.5 active:opacity-70 transition-opacity"
-    >
+    <button onClick={onClick} className="w-full flex items-center gap-3 py-2.5 active:opacity-70 transition-opacity">
       <span
-        className="w-7 h-7 rounded-full shrink-0"
-        style={{
-          backgroundColor: item.accentFrom,
-          boxShadow: isActive ? `0 0 0 2px var(--bg-card), 0 0 0 4px ${item.accentFrom}` : "none",
-        }}
+        className={`w-7 h-7 rounded-full shrink-0 ${isActive ? "ring-2 ring-offset-2 ring-offset-surface ring-accent" : ""}`}
+        style={{ backgroundColor: item.accent }}
       />
-      <span className="flex-1 text-left text-sm font-medium text-text-main">
-        {item.label}
-      </span>
-      {isLocked && <Crown size={15} color="#E0A62E" />}
-      {isActive && <Check size={17} color="var(--accent-from)" strokeWidth={3} />}
+      <span className="flex-1 text-left text-sm font-medium text-main">{item.label}</span>
+      {isLocked && <Crown size={15} className="text-warning" />}
+      {isActive && <Check size={17} className="text-accent" strokeWidth={3} />}
     </button>
   );
 }
@@ -177,12 +134,7 @@ function ThemePickerRow({ isPremium, onOpenPremium }) {
 
   function choose(key, locked) {
     if (locked) {
-      // MUHIM TUZATISH: ilgari bu yerda showComingSoon("Premium tariflar")
-      // chaqirilardi — foydalanuvchi faqat "Premium tariflar" degan alert
-      // ko'rardi va nima qilish kerakligini tushunmasdi. Bu o'lik yo'l edi:
-      // tema bloklangan, lekin premium sahifasiga o'tish imkoni yo'q.
-      //
-      // Endi to'g'ridan-to'g'ri premium sahifasiga o'tkazamiz — foydalanuvchi
+      // To'g'ridan-to'g'ri premium sahifasiga o'tkazamiz — foydalanuvchi
       // nima uchun bloklanganini ko'radi va sotib olishi mumkin.
       onOpenPremium?.();
       return;
@@ -191,28 +143,21 @@ function ThemePickerRow({ isPremium, onOpenPremium }) {
   }
 
   return (
-    <div className="w-full rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between"
-      >
-        <span className="font-medium text-text-main text-sm">{t("settings.theme")}</span>
+    <Card className="px-4 py-3.5">
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between">
+        <span className="font-medium text-main text-sm">{t("settings.theme")}</span>
         <span className="flex items-center gap-2">
-          <span
-            className="w-4 h-4 rounded-full"
-            style={{ backgroundColor: activeItem?.accentFrom }}
-          />
+          <span className="w-4 h-4 rounded-full" style={{ backgroundColor: activeItem?.accent }} />
           <ChevronRight
             size={16}
-            color="var(--chevron)"
-            className="transition-transform"
+            className="text-soft transition-transform"
             style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
           />
         </span>
       </button>
 
       {open && (
-        <div className="mt-3.5 pt-3.5 border-t border-card-border">
+        <div className="mt-3.5 pt-3.5 border-t border-line">
           <div className="flex gap-3">
             {modePills.map((item) => (
               <ThemeModePill
@@ -224,7 +169,7 @@ function ThemePickerRow({ isPremium, onOpenPremium }) {
             ))}
           </div>
 
-          <div className="mt-1 divide-y divide-card-border">
+          <div className="mt-1 divide-y divide-line">
             {colorOptions.map((item) => (
               <ThemeColorRow
                 key={item.key}
@@ -237,7 +182,7 @@ function ThemePickerRow({ isPremium, onOpenPremium }) {
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -249,39 +194,34 @@ function FontSizePickerRow() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="w-full rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between"
-      >
-        <span className="font-medium text-text-main text-sm">{t("settings.fontSize")}</span>
+    <Card className="px-4 py-3.5">
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between">
+        <span className="font-medium text-main text-sm">{t("settings.fontSize")}</span>
         <span className="flex items-center gap-2">
-          <span className="text-text-muted text-xs">{t(`settings.fontSizeOptions.${fontSizeKey}`)}</span>
+          <span className="text-muted text-xs">{t(`settings.fontSizeOptions.${fontSizeKey}`)}</span>
           <ChevronRight
             size={16}
-            color="var(--chevron)"
-            className="transition-transform"
+            className="text-soft transition-transform"
             style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
           />
         </span>
       </button>
 
       {open && (
-        <div className="mt-3.5 pt-3.5 border-t border-card-border flex gap-2.5">
+        <div className="mt-3.5 pt-3.5 border-t border-line flex gap-2.5">
           {fontSizeList.map((item) => {
             const isActive = item.key === fontSizeKey;
             return (
               <button
                 key={item.key}
                 onClick={() => setFontSizeKey(item.key)}
-                className="flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3 transition-transform active:scale-[0.97]"
-                style={
-                  isActive
-                    ? { background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_FROM})`, color: "white" }
-                    : { background: "var(--bg-card-soft)", color: "var(--text-main)", border: "1px solid var(--border-card)" }
-                }
+                className={`flex-1 flex flex-col items-center gap-1.5 rounded-xl py-3 border transition-transform active:scale-[0.97] ${
+                  isActive ? "bg-accent text-accent-ink border-accent" : "bg-sunken text-main border-line"
+                }`}
               >
-                <span style={{ fontSize: `${item.rootPx}px`, lineHeight: 1 }} className="font-bold">Aa</span>
+                <span style={{ fontSize: `${item.rootPx}px`, lineHeight: 1 }} className="font-bold">
+                  Aa
+                </span>
                 <span className="text-[10px] font-medium">{t(`settings.fontSizeOptions.${item.key}`)}</span>
                 {isActive && <Check size={11} />}
               </button>
@@ -289,18 +229,17 @@ function FontSizePickerRow() {
           })}
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
-// 3c-EKRAN: "Sozlamalar" bo'limi
+// 2c-EKRAN: "Sozlamalar" bo'limi
 export default function SettingsTab({
   user,
   onOpenAdmin,
   onOpenModerator,
   onOpenPremium,
   onOpenSupport,
-  onOpenSchool,
   onOpenReferral,
 }) {
   const { t } = useTranslation();
@@ -317,24 +256,17 @@ export default function SettingsTab({
 
   return (
     <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-4 animate-fade-in">
-      <h1 className="text-xl font-extrabold text-text-main text-center mb-5">
-        {t("settings.title")}
-      </h1>
+      <h1 className="text-xl font-extrabold text-main text-center mb-5">{t("settings.title")}</h1>
 
-      <div className="rounded-3xl bg-card border border-card-border shadow-sm p-5 flex items-center gap-3">
-        <div
-          className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold"
-          style={{ backgroundColor: ACCENT_FROM }}
-        >
-          S
+      <Card className="p-5 flex items-center gap-3">
+        <div className="w-14 h-14 rounded-full bg-accent text-accent-ink flex items-center justify-center text-xl font-bold shrink-0">
+          {(user?.name || "?").slice(0, 1).toUpperCase()}
         </div>
-        <div>
-          <p className="font-bold text-text-main">{user?.name || "—"}</p>
-          <p className="text-text-muted text-sm">
-            {user?.username ? `@${user.username}` : ""}
-          </p>
+        <div className="min-w-0">
+          <p className="font-bold text-main truncate">{user?.name || "—"}</p>
+          <p className="text-muted text-sm truncate">{user?.username ? `@${user.username}` : ""}</p>
         </div>
-      </div>
+      </Card>
 
       <div className="mt-3 space-y-3">
         <PremiumRow onClick={onOpenPremium} />
@@ -342,27 +274,14 @@ export default function SettingsTab({
         <ThemePickerRow isPremium={isPremium} onOpenPremium={onOpenPremium} />
         <FontSizePickerRow />
         <LeaderboardToggle />
-        <SettingsRow
-          icon={Gift}
-          label={t("settings.inviteFriends")}
-          onClick={onOpenReferral}
-        />
-        <SettingsRow
-          icon={School}
-          label={t("settings.mySchool")}
-          onClick={onOpenSchool}
-        />
-        <SettingsRow
-          icon={HelpCircle}
-          label={t("settings.support")}
-          onClick={onOpenSupport}
-        />
+        <Card>
+          <ListRow icon={Gift} label={t("settings.inviteFriends")} onClick={onOpenReferral} />
+        </Card>
+        <Card>
+          <ListRow icon={HelpCircle} label={t("settings.support")} onClick={onOpenSupport} />
+        </Card>
       </div>
 
-      {/* Telegram tugmasi. ILGARIGI XATO: bu element umuman bosilmasdi —
-          onClick yo'q edi, shuning uchun hech qayerga olib bormasdi.
-          Endi havola admin panelidan sozlanadi va sozlanmagan bo'lsa
-          tugma KO'RSATILMAYDI (bosib bo'lmaydigan tugmadan ko'ra yaxshi). */}
       {supportLink && (
         <button
           onClick={() => {
@@ -377,48 +296,27 @@ export default function SettingsTab({
               window.open(supportLink, "_blank");
             }
           }}
-          className="w-full mt-3 rounded-2xl px-4 py-4 flex items-center gap-3 text-white text-left active:scale-[0.99] transition-transform"
-          style={{ background: "linear-gradient(90deg,#0EA5E9,#0369A1)" }}
+          className="w-full mt-3 rounded-2xl px-4 py-4 flex items-center gap-3 text-white text-left active:scale-[0.99] transition-transform bg-accent"
         >
           <Send size={18} />
           <div className="flex-1 min-w-0">
             <p className="font-bold text-sm">{t("settings.channelTitle")}</p>
-            <p className="text-white/70 text-xs">
-              {t("settings.channelSubtitle")}
-            </p>
+            <p className="text-white/70 text-xs">{t("settings.channelSubtitle")}</p>
           </div>
-          <ChevronRight size={18} color="white" />
+          <ChevronRight size={18} />
         </button>
       )}
 
       {isAdmin && (
-        <div className="mt-3">
-          <button
-            onClick={onOpenAdmin}
-            className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5 text-left"
-          >
-            <ShieldCheck size={18} color="var(--icon-muted)" />
-            <span className="flex-1 font-medium text-text-main text-sm">
-              {t("settings.adminPanel")}
-            </span>
-            <ChevronRight size={18} color="var(--chevron)" />
-          </button>
-        </div>
+        <Card className="mt-3">
+          <ListRow icon={ShieldCheck} label={t("settings.adminPanel")} onClick={onOpenAdmin} />
+        </Card>
       )}
 
       {isModerator && (
-        <div className="mt-3">
-          <button
-            onClick={onOpenModerator}
-            className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5 text-left"
-          >
-            <ShieldCheck size={18} color="var(--icon-muted)" />
-            <span className="flex-1 font-medium text-text-main text-sm">
-              {t("settings.moderatorPanel")}
-            </span>
-            <ChevronRight size={18} color="var(--chevron)" />
-          </button>
-        </div>
+        <Card className="mt-3">
+          <ListRow icon={ShieldCheck} label={t("settings.moderatorPanel")} onClick={onOpenModerator} />
+        </Card>
       )}
     </div>
   );

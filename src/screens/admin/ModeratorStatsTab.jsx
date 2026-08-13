@@ -2,22 +2,27 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Users, Crown, UserPlus, CalendarDays, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { api } from "../../api";
-import { ACCENT_FROM, ACCENT_TO } from "../../theme";
+import { Card } from "../../components/ui";
 
-function StatCard({ icon: Icon, label, value, color }) {
+function StatCard({ icon: Icon, label, value, tone }) {
+  const toneClass = {
+    accent: "bg-accent-soft text-accent",
+    warning: "bg-warning/15 text-warning",
+    success: "bg-success/15 text-success",
+    info: "bg-sky-500/15 text-sky-400",
+    danger: "bg-danger/15 text-danger",
+  }[tone];
+
   return (
-    <div className="rounded-2xl bg-card border border-card-border shadow-sm p-4 flex items-center gap-3">
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-        style={{ backgroundColor: `${color}22` }}
-      >
-        <Icon size={18} color={color} />
+    <Card className="p-4 flex items-center gap-3">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${toneClass}`}>
+        <Icon size={18} />
       </div>
       <div className="min-w-0">
-        <p className="text-lg font-extrabold text-text-main leading-tight">{value}</p>
-        <p className="text-text-muted text-xs truncate">{label}</p>
+        <p className="text-lg font-extrabold text-main leading-tight">{value}</p>
+        <p className="text-muted text-xs truncate">{label}</p>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -40,24 +45,24 @@ export default function ModeratorStatsTab() {
   }, []);
 
   if (loading && !stats) {
-    return <p className="text-center text-text-muted text-sm mt-10">...</p>;
+    return <p className="text-center text-muted text-sm mt-10">...</p>;
   }
   if (!stats) return null;
 
   return (
     <div className="space-y-3 pb-4">
       <div className="grid grid-cols-2 gap-3">
-        <StatCard icon={Users} label={t("admin.moderator.totalUsers")} value={stats.totalUsers} color={ACCENT_FROM} />
-        <StatCard icon={Crown} label={t("admin.moderator.premiumUsers")} value={stats.premiumUsers} color="#E0A62E" />
-        <StatCard icon={UserPlus} label={t("admin.moderator.registeredToday")} value={stats.registeredToday} color="#16A34A" />
-        <StatCard icon={CalendarDays} label={t("admin.moderator.registeredThisWeek")} value={stats.registeredThisWeek} color="#0EA5E9" />
+        <StatCard icon={Users} label={t("admin.moderator.totalUsers")} value={stats.totalUsers} tone="accent" />
+        <StatCard icon={Crown} label={t("admin.moderator.premiumUsers")} value={stats.premiumUsers} tone="warning" />
+        <StatCard icon={UserPlus} label={t("admin.moderator.registeredToday")} value={stats.registeredToday} tone="success" />
+        <StatCard icon={CalendarDays} label={t("admin.moderator.registeredThisWeek")} value={stats.registeredThisWeek} tone="info" />
       </div>
 
-      <p className="text-text-muted text-xs font-semibold mt-4 mb-1 ml-1">{t("admin.moderator.paymentsOverview")}</p>
+      <p className="text-muted text-xs font-semibold mt-4 mb-1 ml-1">{t("admin.moderator.paymentsOverview")}</p>
       <div className="grid grid-cols-3 gap-3">
-        <StatCard icon={Clock} label={t("admin.payments.filterPending")} value={stats.payments.pending} color="#D97706" />
-        <StatCard icon={CheckCircle2} label={t("admin.payments.filterApproved")} value={stats.payments.approved} color="#16A34A" />
-        <StatCard icon={XCircle} label={t("admin.payments.filterRejected")} value={stats.payments.rejected} color="#DC2626" />
+        <StatCard icon={Clock} label={t("admin.payments.filterPending")} value={stats.payments.pending} tone="warning" />
+        <StatCard icon={CheckCircle2} label={t("admin.payments.filterApproved")} value={stats.payments.approved} tone="success" />
+        <StatCard icon={XCircle} label={t("admin.payments.filterRejected")} value={stats.payments.rejected} tone="danger" />
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, CheckCircle2, XCircle, Clock, Percent } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Percent } from "lucide-react";
 import { api } from "../../api";
 import { formatDuration } from "../../components/exam/ExamTimer";
+import { QuizShell, QuizHeader } from "../../components/exam/QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 const PAGE_SIZE = 20;
 
@@ -48,36 +50,27 @@ export default function ExamHistoryScreen({ onBack, onOpenReview }) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 bg-[#0F1424] min-h-full text-white animate-slide-in">
-      <div className="flex items-center gap-3 mb-5">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={20} color="#E5E7EB" />
-        </button>
-        <div>
-          <h1 className="text-lg font-extrabold leading-none">
-            {t("officialExam.historyTitle")}
-          </h1>
-          {total > 0 && (
-            <p className="text-gray-400 text-xs mt-1">
-              {t("officialExam.historyCount", { count: total })}
-            </p>
-          )}
-        </div>
-      </div>
+    <QuizShell>
+      <QuizHeader
+        title={t("officialExam.historyTitle")}
+        subtitle={total > 0 ? t("officialExam.historyCount", { count: total }) : undefined}
+        onBack={onBack}
+      />
 
       {loading && (
         <div className="flex justify-center py-10">
-          <span className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+          <span className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: QUIZ.border, borderTopColor: QUIZ.text }} />
         </div>
       )}
 
-      {error && <p className="text-red-400 text-sm text-center py-6">{error}</p>}
+      {error && (
+        <p className="text-sm text-center py-6" style={{ color: QUIZ.danger }}>
+          {error}
+        </p>
+      )}
 
       {!loading && !error && exams.length === 0 && (
-        <p className="text-gray-500 text-sm text-center py-12 leading-relaxed px-6">
+        <p className="text-sm text-center py-12 leading-relaxed px-6" style={{ color: "#6B7A8A" }}>
           {t("officialExam.noHistory")}
         </p>
       )}
@@ -87,33 +80,29 @@ export default function ExamHistoryScreen({ onBack, onOpenReview }) {
           <button
             key={exam.id}
             onClick={() => onOpenReview(exam.id)}
-            className={`w-full text-left rounded-2xl border p-4 active:scale-[0.99] transition-transform ${
+            className="w-full text-left rounded-2xl border p-4 active:scale-[0.99] transition-transform"
+            style={
               exam.passed
-                ? "border-emerald-500/25 bg-emerald-500/[0.04]"
-                : "border-red-500/25 bg-red-500/[0.04]"
-            }`}
+                ? { borderColor: "rgba(52,211,153,0.25)", background: "rgba(52,211,153,0.04)" }
+                : { borderColor: "rgba(248,113,113,0.25)", background: "rgba(248,113,113,0.04)" }
+            }
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                {exam.passed ? (
-                  <CheckCircle2 size={16} color="#34D399" />
-                ) : (
-                  <XCircle size={16} color="#F87171" />
-                )}
-                <span
-                  className="font-extrabold text-sm"
-                  style={{ color: exam.passed ? "#34D399" : "#F87171" }}
-                >
+                {exam.passed ? <CheckCircle2 size={16} color={QUIZ.success} /> : <XCircle size={16} color={QUIZ.danger} />}
+                <span className="font-extrabold text-sm" style={{ color: exam.passed ? QUIZ.success : QUIZ.danger }}>
                   {exam.passed ? t("officialExam.passed") : t("officialExam.failed")}
                 </span>
               </div>
               <span className="font-extrabold text-sm">
                 {exam.correctCount}
-                <span className="text-gray-500 text-xs">/{exam.totalQuestions}</span>
+                <span className="text-xs" style={{ color: QUIZ.muted }}>
+                  /{exam.totalQuestions}
+                </span>
               </span>
             </div>
 
-            <div className="flex items-center gap-4 text-gray-400 text-xs">
+            <div className="flex items-center gap-4 text-xs" style={{ color: QUIZ.muted }}>
               <span className="flex items-center gap-1">
                 <Percent size={12} /> {exam.accuracyPct}%
               </span>
@@ -130,11 +119,12 @@ export default function ExamHistoryScreen({ onBack, onOpenReview }) {
         <button
           onClick={loadMore}
           disabled={loadingMore}
-          className="w-full mt-4 rounded-2xl py-3 font-semibold text-sm border border-white/10 bg-white/[0.03] text-gray-300 disabled:opacity-50"
+          className="w-full mt-4 rounded-2xl py-3 font-semibold text-sm border disabled:opacity-50"
+          style={{ background: QUIZ.cardSoft, borderColor: QUIZ.border, color: "#D1D5DB" }}
         >
           {loadingMore ? t("officialExam.loading") : t("officialExam.loadMore")}
         </button>
       )}
-    </div>
+    </QuizShell>
   );
 }

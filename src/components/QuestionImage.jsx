@@ -44,7 +44,6 @@ export default function QuestionImage({
         className={`rounded-3xl bg-white flex items-center justify-center shadow-lg ${
           scene ? "w-full max-w-[280px] p-2" : "w-32 h-32"
         }`}
-        style={{ boxShadow: "0 10px 30px rgba(108,92,231,0.25)" }}
       >
         {scene ? (
           <TicketQuestionImage

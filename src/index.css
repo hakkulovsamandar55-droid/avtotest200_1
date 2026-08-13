@@ -6,6 +6,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-app);
 }
 
 /* Barcha bosiladigan elementlarda mobil brauzer "tap highlight" ni olib tashlash
@@ -14,7 +15,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 button {
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
 }
 
 /* Telegram Mini App'ning o'z tepa paneli (Close / menyu tugmalari) ilova
@@ -24,9 +25,8 @@ button {
   padding-top: calc(env(safe-area-inset-top, 0px) + 3.25rem);
 }
 
-/* Bilet/premium panellarida scroll qilganda o'ng tomonda chiqadigan
-   xunuk oq/kulrang scrollbar chizig'ini yashirish (mobil ilovada kerak emas,
-   scroll gesture baribir ishlayveradi) */
+/* Ro'yxat/panel scroll qilganda o'ng tomonda chiqadigan xunuk scrollbar
+   chizig'ini yashirish (mobil ilovada kerak emas, scroll gesture ishlayveradi) */
 .overflow-y-auto {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
@@ -44,158 +44,40 @@ button {
 }
 
 /* ============================================================================
-   FROSTED GLASS — barcha temalar uchun umumiy qatlamlar
+   SOLID FLAT — barcha temalar uchun umumiy qatlamlar
    ============================================================================
-
-   TUZILMA:
-     1) body           -> tema fon rangi (--bg-app)
-     2) body::before   -> rangli oqim (4 ta radial-gradient)
-     3) body::after    -> vinyetka: chekkalarni quyuqlashtiradi, matnni ajratadi
-     4) .bg-card       -> RANGSIZ shisha panel (faqat fonni xiralashtiradi)
-
-   NIMA UCHUN CSS DA, themes.js DA EMAS: backdrop-filter va ko'p qavatli
-   soyalar — bular XOSSA, qiymat emas; CSS o'zgaruvchisi orqali berib
-   bo'lmaydi. Ilovada `bg-card` klassi 118+ joyda ishlatiladi, shuning uchun
-   shisha ko'rinishi shu yerda BIR MARTA beriladi.
+   Eski "frosted glass" (blur, shaffof panel, fon blob'lari) butunlay olib
+   tashlandi. Fon — TEKIS bitta rang (--bg-app). Panellar — TEKIS bitta rang
+   (--bg-surface) + ingichka 1px chegara (--border). Chuqurlik kerak bo'lganda
+   juda yengil soya (--shadow-sm) ishlatiladi, backdrop-filter yo'q — bu ham
+   past quvvatli qurilmalarda tezroq ishlaydi, ham ko'rinishi aniqroq.
    ============================================================================ */
 
-body {
-  background-color: var(--bg-app);
-  position: relative;
-}
-
-/* Rangli oqim. `fixed` — aylantirganda fon qimirlamaydi, bu qatlamni
-   qayta rasterlashdan saqlaydi (mobil uchun muhim). */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(ellipse 78% 52% at 12% -6%, var(--blob-1), transparent 68%),
-    radial-gradient(ellipse 66% 48% at 104% 24%, var(--blob-2), transparent 68%),
-    radial-gradient(ellipse 84% 46% at 4% 96%, var(--blob-3), transparent 70%),
-    radial-gradient(ellipse 58% 40% at 96% 82%, var(--blob-4), transparent 72%);
-}
-
-/* Vinyetka — chekkalar quyuqroq. Bu ikki ish qiladi: markazga diqqatni
-   yo'naltiradi va panel chekkalarida kontrastni oshiradi. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at 50% 0%, transparent 32%, var(--vignette) 100%);
-}
-
-/* Ilova mazmuni fon qatlamlaridan yuqorida */
-#root {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---- SHISHA PANEL ----
-   Panel gradient bo'lishi SHART: tekis shaffoflik plastik ko'rinadi.
-   145° burchak — yorug'lik yuqori chapdan tushadi degan mantiq, butun
-   ilovada izchil saqlanadi. */
-/* UNUMDORLIK: bu yerda ilgari backdrop-filter: blur(24-28px) saturate(1.35)
-   turardi va u 148 ta elementga qo'llanardi. backdrop-filter bo'lgan har
-   bir element alohida kompozit qatlam oladi va brauzer SKROLL PAYTIDA HAR
-   KADRDA uning orqasidagi hamma narsani qayta o'qib, qayta blur qilishi
-   kerak. Ekranda 8 ta karta bo'lsa — sekundiga 60 marta 8 ta katta radiusli
-   blur. Telegram WebView'da bu sezilarli "past Hz" effektini berardi.
-
-   NIMA UCHUN OLIB TASHLASH XAVFSIZ: kartalar ortida faqat body::before
-   dagi SILLIQ radial gradientlar va vinyetka turadi — o'tkir detal yo'q.
-   Silliq gradientni blur qilish natijasi deyarli o'ziga teng, ya'ni
-   effekt ko'rinmasdi, lekin narxi to'liq to'lanardi.
-
-   nav'da blur SAQLANDI (pastga qarang) — u chindan ham harakatlanuvchi
-   mazmun ustida turadi va bitta element, narxi cheklangan.
-
-   Agar panellar juda "yupqa" ko'rinsa: themes.js dagi --bg-card /
-   --bg-card-soft shaffofligini biroz oshirish kifoya. */
-.bg-card,
-.bg-card-soft {
-  background-image: linear-gradient(155deg, var(--glass-hi-fill), transparent 65%);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-hi),
-    inset 0 -1px 0 var(--glass-lo);
-}
-
-/* Panel ustidagi ingichka yorug' qatlam — shisha qirrasida yorug'lik sinishi.
-   Alohida o'zgaruvchi, chunki quyuq va yorug' temalarda kuchi farq qiladi. */
-:root {
-  --glass-hi-fill: rgba(255, 255, 255, 0.06);
-}
-[data-theme="day"],
-[data-theme="dune"] {
-  --glass-hi-fill: rgba(255, 255, 255, 0.28);
-}
-
-/* Tailwind soya klasslari shisha bilan to'qnashmasligi uchun */
-.bg-card.shadow-sm,
-.bg-card.shadow-md,
-.bg-card.shadow-lg,
-.bg-card-soft.shadow-sm {
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-hi),
-    inset 0 -1px 0 var(--glass-lo) !important;
-}
-
-/* Pastki navigatsiya — kuchliroq blur, chunki u mazmun ustida turadi */
-nav {
-  backdrop-filter: blur(30px) saturate(1.4);
-  -webkit-backdrop-filter: blur(30px) saturate(1.4);
-  background: var(--bg-card);
-  border-top: 1px solid var(--border-card);
-  box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.22);
-}
-
-/* Kiritish maydonlari — shisha, lekin "botgan" (panel ko'tarilgan bo'lsa,
-   input botgan bo'lishi kerak: nima bosiladi, nimaga yoziladi ajraladi) */
 input,
 textarea,
 select {
-  background: var(--bg-card-soft);
-  /* blur(14px) olib tashlandi: inputlar kartalar USTIDA turadi, ya'ni
-     ularning orqasida allaqachon tekis fon bor — blur qiladigan narsa
-     yo'q edi, faqat qo'shimcha kompozit qatlam yaratardi. */
-  border-color: var(--border-card);
-  box-shadow: inset 0 2px 6px var(--glass-lo);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
 }
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--accent-from);
+  outline: none;
+  border-color: var(--accent);
 }
 
 /* Progress yo'lakchalari — tema bo'yicha */
 .track-bg {
-  background: var(--track);
+  background: var(--bg-sunken);
 }
 
-/* Eski brauzerlar uchun @supports zaxirasi OLIB TASHLANDI: kartalarda
-   backdrop-filter umuman ishlatilmaydi, shuning uchun "qo'llab-quvvatlanmasa"
-   holati endi mavjud emas. */
-
-/* Harakat kamaytirilgan rejim yoki sekin qurilma — nav'dagi blur ham
-   kamaytiriladi. Bu yagona qolgan backdrop-filter, shuning uchun faqat
-   shu yerda. */
-@media (prefers-reduced-motion: reduce) {
-  nav {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-}
-
-/* Gorizontal suriladigan chip qatorlarida (masalan Shpargalka kategoriyalari)
-   scrollbar ko'rinishini yashiradi — suring ishlayveradi, faqat vizual chiziq
-   yashiriladi. */
+/* Gorizontal suriladigan chip qatorlarida scrollbar ko'rinishini yashiradi —
+   suring ishlayveradi, faqat vizual chiziq yashiriladi. */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

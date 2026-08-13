@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft } from "lucide-react";
 import BottomNav from "../components/BottomNav";
 import HomeTab from "./HomeTab";
 import StatsTab from "./StatsTab";
@@ -16,12 +15,10 @@ import DuelScreen from "./DuelScreen";
 import SupportChatScreen from "./SupportChatScreen";
 import PaymentScreen from "./PaymentScreen";
 import OfficialExamContainer from "./officialExam/OfficialExamContainer";
-import StudentSchoolContainer from "./school/StudentSchoolContainer";
 import TopicTestsScreen from "./TopicTestsScreen";
 import MistakesHubScreen from "./MistakesHubScreen";
 import QuestionListScreen from "./QuestionListScreen";
 import TrickyTestScreen from "./TrickyTestScreen";
-import CheatSheetScreen from "./CheatSheetScreen";
 import ReferralScreen from "./ReferralScreen";
 import OnboardingSlideshow, {
   hasSeenOnboarding,
@@ -30,7 +27,7 @@ import OnboardingSlideshow, {
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { getQuestionsForTopic } from "../../shared/data/questionTopics";
 
-// 3-EKRAN: login+loading dan keyingi asosiy ilova — 3 bo'lim + pastki nav
+// 2-EKRAN: login dan keyingi asosiy ilova — 3 bo'lim + pastki nav
 export default function MainApp({ user }) {
   const { t, i18n } = useTranslation();
   const [active, setActive] = useState("home");
@@ -48,25 +45,9 @@ export default function MainApp({ user }) {
   const [showPremium, setShowPremium] = useState(false);
   const [showDuel, setShowDuel] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
-  // Guruhga qo'shilish deep link'i bilan ochilganmi (?startapp=join_KOD).
-  // Shunday bo'lsa maktab bo'limi DARHOL ochiladi — foydalanuvchi qo'lda
-  // "Maktab" tugmasini qidirib topishi shart emas.
-  //
-  // NIMA UCHUN lazy initializer: bu bir martalik tekshiruv, har renderda
-  // qayta hisoblash ma'nosiz.
-  const [showSchool, setShowSchool] = useState(() => {
-    try {
-      const fromUrl = new URLSearchParams(window.location.search).get("startapp");
-      const fromTg = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
-      return String(fromUrl || fromTg || "").startsWith("join_");
-    } catch (e) {
-      return false;
-    }
-  });
   const [showTopics, setShowTopics] = useState(false);
   const [showMistakes, setShowMistakes] = useState(false);
   const [showTricky, setShowTricky] = useState(false);
-  const [showCheatSheet, setShowCheatSheet] = useState(false);
   const [showReferral, setShowReferral] = useState(false);
   // questionList: null | "saved" | "mistakes" | "hardest"
   const [questionList, setQuestionList] = useState(null);
@@ -94,17 +75,6 @@ export default function MainApp({ user }) {
             setShowOfficialExam(false);
             setShowPremium(true);
           }}
-        />
-      </div>
-    );
-  }
-
-  if (showSchool) {
-    return (
-      <div className="flex flex-col h-full">
-        <StudentSchoolContainer
-          currentUserId={user?.id}
-          onExit={() => setShowSchool(false)}
         />
       </div>
     );
@@ -243,22 +213,10 @@ export default function MainApp({ user }) {
   }
 
   // CHALG'ITUVCHI TESTLAR — ko'pchilik xato qiladigan savollardan tuzilgan test.
-  //
-  // Savollar serverdan ID sifatida keladi (global question_stats bo'yicha,
-  // yetmasa foydalanuvchining o'z xatolaridan). Matnlar mahalliy bazadan
-  // olinadi — tarmoq orqali qayta yuborish ma'nosiz bo'lardi.
   if (showTricky) {
     return (
       <div className="flex flex-col h-full">
         <TrickyTestScreen onBack={() => setShowTricky(false)} />
-      </div>
-    );
-  }
-
-  if (showCheatSheet) {
-    return (
-      <div className="flex flex-col h-full">
-        <CheatSheetScreen onBack={() => setShowCheatSheet(false)} />
       </div>
     );
   }
@@ -312,12 +270,10 @@ export default function MainApp({ user }) {
           onOpenOfficialExam={() => setShowOfficialExam(true)}
           onOpenStats={() => setActive("stats")}
           onOpenDuel={() => setShowDuel(true)}
-          onOpenSchool={() => setShowSchool(true)}
           onOpenTopics={() => setShowTopics(true)}
           onOpenMistakes={() => setShowMistakes(true)}
           onOpenSaved={() => setQuestionList("saved")}
           onOpenTricky={() => setShowTricky(true)}
-          onOpenCheatSheet={() => setShowCheatSheet(true)}
           onOpenPremium={() => setShowPremium(true)}
         />
       )}
@@ -329,7 +285,6 @@ export default function MainApp({ user }) {
           onOpenModerator={() => setShowModerator(true)}
           onOpenPremium={() => setShowPremium(true)}
           onOpenSupport={() => setShowSupport(true)}
-          onOpenSchool={() => setShowSchool(true)}
           onOpenReferral={() => setShowReferral(true)}
         />
       )}
@@ -337,4 +292,3 @@ export default function MainApp({ user }) {
     </div>
   );
 }
-

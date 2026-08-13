@@ -41,7 +41,7 @@ export default function TicketQuestionImage({ questionId, maxHeight = 220, alt }
       src={src}
       alt={alt || ""}
       loading="lazy"
-      className="w-full rounded-2xl object-contain bg-card-soft"
+      className="w-full rounded-2xl object-contain bg-black/5"
       style={{ maxHeight }}
     />
   );

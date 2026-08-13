@@ -59,7 +59,7 @@ export default function App() {
   }, [t]);
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-[#0B0B14] dark:bg-[#0B0B14]">
+    <div className="h-screen w-full overflow-hidden bg-app">
       {stage === "login" && (
         <LoginScreen onLogin={handleLogin} externalNotice={sessionNotice} />
       )}

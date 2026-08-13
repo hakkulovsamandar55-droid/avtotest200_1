@@ -23,11 +23,6 @@ export const prisma = createFakeDb();
 const TEST_FILES = [
   "exam.service.test.mjs",
   "exam.expiry.test.mjs",
-  "school.service.test.mjs",
-  "homework.service.test.mjs",
-  "school.http.test.mjs",
-  "school.regression.test.mjs",
-  "school.chat.test.mjs",
   "questionBank.test.mjs",
 ];
 

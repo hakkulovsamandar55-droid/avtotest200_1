@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, AlertTriangle, Send } from "lucide-react";
 import { api } from "../../api";
-import { ACCENT_FROM, ACCENT_TO, ACCENT_WARM } from "../../theme";
 import QuestionCard from "../../components/exam/QuestionCard";
 import QuestionNavigator from "../../components/exam/QuestionNavigator";
 import ExamTimer from "../../components/exam/ExamTimer";
+import { QuizShell, QuizHeader, QuizProgress, QuizButton } from "../../components/exam/QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 /**
  * Rasmiy imtihon — asosiy ekran.
@@ -127,70 +128,45 @@ export default function OfficialExamScreen({ exam, onFinished, onExit }) {
   const chosen = answers[String(index)];
   const isLast = index === total - 1;
 
+  const warningStyle = {
+    danger: { background: QUIZ.dangerSoft, borderColor: "rgba(248,113,113,0.3)" },
+    warning: { background: "rgba(251,191,36,0.15)", borderColor: "rgba(251,191,36,0.3)" },
+    info: { background: "rgba(56,189,248,0.15)", borderColor: "rgba(56,189,248,0.3)" },
+  }[warning];
+
   return (
-    <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 bg-[#0F1424] min-h-full text-white animate-slide-in">
-      {/* Sarlavha + taymer */}
-      <div className="flex items-center gap-3 mb-4">
-        <button
-          onClick={() => setShowConfirm("exit")}
-          className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"
-          aria-label={t("officialExam.title")}
-        >
-          <ChevronLeft size={20} color="#E5E7EB" />
-        </button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-base font-extrabold leading-none truncate">
-            {t("officialExam.title")}
-          </h1>
-          <p className="text-gray-400 text-xs mt-1">
-            {t("officialExam.questionOf", { current: index + 1, total })}
-          </p>
-        </div>
-        <ExamTimer
-          serverSecondsLeft={secondsLeft}
-          onExpire={() => submit({ auto: true })}
-          onWarning={handleWarning}
-        />
-      </div>
+    <QuizShell>
+      <QuizHeader
+        title={t("officialExam.title")}
+        subtitle={t("officialExam.questionOf", { current: index + 1, total })}
+        onBack={() => setShowConfirm("exit")}
+        right={
+          <ExamTimer serverSecondsLeft={secondsLeft} onExpire={() => submit({ auto: true })} onWarning={handleWarning} />
+        }
+      />
 
       {warning && (
-        <div
-          className={`rounded-2xl px-4 py-2.5 mb-4 flex items-center gap-2 ${
-            warning === "danger"
-              ? "bg-red-500/15 border border-red-500/30"
-              : warning === "warning"
-              ? "bg-amber-500/15 border border-amber-500/30"
-              : "bg-sky-500/15 border border-sky-500/30"
-          }`}
-        >
-          <AlertTriangle size={14} color={warning === "danger" ? "#F87171" : ACCENT_WARM} />
-          <p className="text-xs font-semibold">
-            {t(`officialExam.warning.${warning}`)}
-          </p>
+        <div className="rounded-2xl px-4 py-2.5 mb-4 flex items-center gap-2 border" style={warningStyle}>
+          <AlertTriangle size={14} color={warning === "danger" ? QUIZ.danger : QUIZ.warning} />
+          <p className="text-xs font-semibold">{t(`officialExam.warning.${warning}`)}</p>
         </div>
       )}
 
-      {/* Progress */}
       <div className="flex items-center gap-3 mb-5">
-        <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-300 ease-out"
-            style={{
-              width: `${(answeredCount / total) * 100}%`,
-              background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_WARM})`,
-            }}
-          />
+        <div className="flex-1">
+          <QuizProgress pct={(answeredCount / total) * 100} />
         </div>
         <button
           onClick={() => setShowNavigator((v) => !v)}
-          className="text-xs font-semibold text-gray-300 shrink-0 underline decoration-dotted"
+          className="text-xs font-semibold shrink-0 underline decoration-dotted"
+          style={{ color: "#D1D5DB" }}
         >
           {t("officialExam.answeredOf", { answered: answeredCount, total })}
         </button>
       </div>
 
       {showNavigator && (
-        <div className="mb-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] p-3">
+        <div className="mb-5 rounded-2xl border p-3" style={{ background: QUIZ.cardSoft, borderColor: QUIZ.border }}>
           <QuestionNavigator
             total={total}
             currentIndex={index}
@@ -203,99 +179,77 @@ export default function OfficialExamScreen({ exam, onFinished, onExit }) {
         </div>
       )}
 
-      <QuestionCard
-        question={question}
-        mode="answering"
-        chosenIndex={chosen ?? null}
-        onChoose={choose}
-      />
+      <QuestionCard question={question} mode="answering" chosenIndex={chosen ?? null} onChoose={choose} />
 
       {error && (
-        <p className="text-red-400 text-xs text-center mt-4">{error}</p>
+        <p className="text-xs text-center mt-4" style={{ color: QUIZ.danger }}>
+          {error}
+        </p>
       )}
 
-      {/* Navigatsiya */}
       <div className="flex items-center gap-3 mt-6">
         <button
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={index === 0}
-          className="w-12 h-12 rounded-2xl border border-white/10 bg-white/[0.04] flex items-center justify-center disabled:opacity-30 shrink-0"
+          className="w-12 h-12 rounded-2xl border flex items-center justify-center disabled:opacity-30 shrink-0"
+          style={{ borderColor: QUIZ.border, background: QUIZ.card }}
           aria-label={t("officialExam.previous")}
         >
-          <ChevronLeft size={20} color="#E5E7EB" />
+          <ChevronLeft size={20} color={QUIZ.text} />
         </button>
 
         {isLast ? (
-          <button
-            onClick={() => setShowConfirm("submit")}
-            disabled={submitting}
-            className="flex-1 rounded-2xl py-3.5 font-bold text-white text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-50"
-            style={{ background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
-          >
+          <QuizButton onClick={() => setShowConfirm("submit")} disabled={submitting} className="flex-1">
             <Send size={16} />
             {t("officialExam.finish")}
-          </button>
+          </QuizButton>
         ) : (
-          <button
-            onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
-            className="flex-1 rounded-2xl py-3.5 font-bold text-sm bg-white/[0.06] border border-white/10 active:scale-[0.98] transition-transform"
-          >
+          <QuizButton variant="secondary" onClick={() => setIndex((i) => Math.min(total - 1, i + 1))} className="flex-1">
             {chosen === undefined ? t("officialExam.skip") : t("officialExam.next")}
-          </button>
+          </QuizButton>
         )}
 
         <button
           onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
           disabled={isLast}
-          className="w-12 h-12 rounded-2xl border border-white/10 bg-white/[0.04] flex items-center justify-center disabled:opacity-30 shrink-0"
+          className="w-12 h-12 rounded-2xl border flex items-center justify-center disabled:opacity-30 shrink-0"
+          style={{ borderColor: QUIZ.border, background: QUIZ.card }}
           aria-label={t("officialExam.next")}
         >
-          <ChevronRight size={20} color="#E5E7EB" />
+          <ChevronRight size={20} color={QUIZ.text} />
         </button>
       </div>
 
-      {/* Tasdiqlash oynasi */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-5 pb-8">
-          <div className="w-full max-w-sm rounded-3xl bg-[#161B2E] border border-white/10 p-5">
+          <div className="w-full max-w-sm rounded-3xl border p-5" style={{ background: QUIZ.card, borderColor: QUIZ.border }}>
             <p className="font-bold text-base mb-2">
-              {showConfirm === "submit"
-                ? t("officialExam.confirmSubmitTitle")
-                : t("officialExam.confirmExitTitle")}
+              {showConfirm === "submit" ? t("officialExam.confirmSubmitTitle") : t("officialExam.confirmExitTitle")}
             </p>
-            <p className="text-gray-400 text-sm leading-relaxed mb-5">
+            <p className="text-sm leading-relaxed mb-5" style={{ color: QUIZ.muted }}>
               {showConfirm === "submit"
-                ? t("officialExam.confirmSubmitBody", {
-                    unanswered: total - answeredCount,
-                  })
+                ? t("officialExam.confirmSubmitBody", { unanswered: total - answeredCount })
                 : t("officialExam.confirmExitBody")}
             </p>
 
             <div className="space-y-2.5">
-              <button
+              <QuizButton
                 onClick={() => {
                   setShowConfirm(false);
                   if (showConfirm === "submit") submit();
                   else onExit();
                 }}
                 disabled={submitting}
-                className="w-full rounded-2xl py-3.5 font-bold text-white text-sm disabled:opacity-50"
-                style={{ background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
               >
-                {showConfirm === "submit"
-                  ? t("officialExam.confirmSubmitYes")
-                  : t("officialExam.confirmExitYes")}
-              </button>
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="w-full rounded-2xl py-3 font-semibold text-sm text-gray-400 border border-white/10"
-              >
+                {showConfirm === "submit" ? t("officialExam.confirmSubmitYes") : t("officialExam.confirmExitYes")}
+              </QuizButton>
+              <QuizButton variant="secondary" onClick={() => setShowConfirm(false)}>
                 {t("officialExam.back")}
-              </button>
+              </QuizButton>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </QuizShell>
   );
 }

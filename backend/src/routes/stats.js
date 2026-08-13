@@ -9,7 +9,6 @@ import { CATEGORIES as SIGN_CATEGORIES } from "../../../shared/data/signsData.js
 import { TOTAL_TICKETS } from "../data/ticketsData.js";
 // Kun chegarasi mahalliy vaqtga (UTC+5) ko'ra hisoblanadi — lib/time.js ga qarang.
 import { localDayKey } from "../lib/time.js";
-import { recordAttemptForHomework } from "../services/homeworkService.js";
 
 export const statsRouter = Router();
 
@@ -28,10 +27,6 @@ statsRouter.use(requireAuth, loadCurrentUser);
 // shu jadvalga qo'shsak "imtihonga tayyorlik" foizi sun'iy ko'tarilib,
 // foydalanuvchini chalg'itadi.
 //
-// Shuning uchun bu endpoint FAQAT uy vazifasi ilgagini ishga tushiradi:
-// o'qituvchi "belgilarni o'rgan" vazifasini bergan bo'lsa, u yopiladi.
-// Maktabga a'zo bo'lmagan foydalanuvchida hech narsa saqlanmaydi — belgilar
-// testi ular uchun o'rganish vositasi, ball yig'ish emas.
 statsRouter.post("/signs-quiz", asyncHandler(async (req, res) => {
   const { correctCount, totalCount, category } = req.body || {};
 
@@ -53,13 +48,7 @@ statsRouter.post("/signs-quiz", asyncHandler(async (req, res) => {
 
   const scorePct = Math.round((correctCount / totalCount) * 100);
 
-  const submission = await recordAttemptForHomework(req.user.id, {
-    type: "SIGNS",
-    score: scorePct,
-    signsCategory: category ?? null,
-  });
-
-  res.json({ ok: true, scorePct, homeworkClosed: Boolean(submission) });
+  res.json({ ok: true, scorePct });
 }));
 
 statsRouter.post("/attempt", asyncHandler(async (req, res) => {
@@ -119,17 +108,6 @@ statsRouter.post("/attempt", asyncHandler(async (req, res) => {
       durationSec: cleanDuration,
     },
   });
-
-  // Maktab modulining ilgagi: agar bu foydalanuvchi biror maktabga a'zo
-  // bo'lib, shu turdagi tugallanmagan uy vazifasi bo'lsa, avtomatik
-  // yakunlanadi. Xato tashlamaydi va asosiy oqimni bloklamaydi.
-  const scorePct = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-  recordAttemptForHomework(req.user.id, {
-    type: type === "TICKET" ? "TICKETS" : "PRACTICE",
-    score: scorePct,
-    attemptId: attempt.id,
-    ticketNumber: type === "TICKET" ? ticketNumber : null,
-  }).catch((err) => console.error("Homework hook (stats) xatosi:", err));
 
   res.json({ attempt });
 }));

@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Trophy, Clock, Percent, Target, EyeOff } from "lucide-react";
+import { Trophy, Clock, Percent, Target, EyeOff } from "lucide-react";
 import { api } from "../../api";
 import { formatDuration } from "../../components/exam/ExamTimer";
+import { QuizShell, QuizHeader } from "../../components/exam/QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 // Davrlar — backend PERIODS bilan mos. Haftalik backend'da allaqachon bor,
 // kerak bo'lganda shu ro'yxatga qo'shiladi (boshqa o'zgarish shart emas).
@@ -28,26 +30,25 @@ function Row({ entry, sort }) {
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-2xl px-4 py-3 border ${
+      className="flex items-center gap-3 rounded-2xl px-4 py-3 border"
+      style={
         entry.isCurrentUser
-          ? "border-white/30 bg-white/[0.08]"
-          : "border-white/[0.06] bg-white/[0.03]"
-      }`}
+          ? { borderColor: "rgba(244,247,250,0.3)", background: "#1B222B" }
+          : { borderColor: QUIZ.border, background: QUIZ.cardSoft }
+      }
     >
-      <span className="w-7 text-center font-extrabold text-sm shrink-0">
-        {medal || entry.rank}
-      </span>
+      <span className="w-7 text-center font-extrabold text-sm shrink-0">{medal || entry.rank}</span>
 
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm truncate">
           {entry.displayName}
           {entry.isCurrentUser && (
-            <span className="ml-1.5 text-[10px] font-bold text-gray-400">
+            <span className="ml-1.5 text-[10px] font-bold" style={{ color: QUIZ.muted }}>
               {t("officialExam.you")}
             </span>
           )}
         </p>
-        <p className="text-gray-500 text-[11px] mt-0.5">
+        <p className="text-[11px] mt-0.5" style={{ color: "#6B7A8A" }}>
           {sort !== "score" && `${entry.correctCount}/20 · `}
           {sort !== "accuracy" && `${entry.accuracyPct}% · `}
           {sort !== "speed" && formatDuration(entry.durationSec)}
@@ -87,65 +88,70 @@ export default function LeaderboardScreen({ onBack, onOpenSettings }) {
   const entries = data?.entries || [];
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 bg-[#0F1424] min-h-full text-white animate-slide-in">
-      <div className="flex items-center gap-3 mb-5">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={20} color="#E5E7EB" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Trophy size={18} color="#F5C542" />
-          <h1 className="text-lg font-extrabold">{t("officialExam.leaderboardTitle")}</h1>
-        </div>
-      </div>
+    <QuizShell>
+      <QuizHeader
+        title={t("officialExam.leaderboardTitle")}
+        onBack={onBack}
+        right={<Trophy size={18} color={QUIZ.warning} />}
+      />
 
       {/* Davr */}
       <div className="flex gap-2 mb-3">
-        {PERIODS.map((p) => (
-          <button
-            key={p}
-            onClick={() => setPeriod(p)}
-            className={`flex-1 rounded-xl py-2 text-xs font-bold transition-colors ${
-              period === p
-                ? "bg-white text-[#0F1424]"
-                : "bg-white/[0.05] text-gray-400 border border-white/10"
-            }`}
-          >
-            {t(`officialExam.period.${p}`)}
-          </button>
-        ))}
+        {PERIODS.map((p) => {
+          const active = period === p;
+          return (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className="flex-1 rounded-xl py-2 text-xs font-bold transition-colors border"
+              style={
+                active
+                  ? { background: QUIZ.text, color: QUIZ.bg, borderColor: QUIZ.text }
+                  : { background: QUIZ.card, color: QUIZ.muted, borderColor: QUIZ.border }
+              }
+            >
+              {t(`officialExam.period.${p}`)}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tartiblash */}
       <div className="flex gap-2 mb-5">
-        {SORTS.map(({ key, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setSort(key)}
-            className={`flex-1 rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-              sort === key
-                ? "bg-white/[0.14] text-white border border-white/25"
-                : "bg-white/[0.03] text-gray-500 border border-white/[0.06]"
-            }`}
-          >
-            <Icon size={12} />
-            {t(`officialExam.sort.${key}`)}
-          </button>
-        ))}
+        {SORTS.map(({ key, icon: Icon }) => {
+          const active = sort === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setSort(key)}
+              className="flex-1 rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border"
+              style={
+                active
+                  ? { background: "#1B222B", color: QUIZ.text, borderColor: "rgba(244,247,250,0.25)" }
+                  : { background: QUIZ.cardSoft, color: "#6B7A8A", borderColor: QUIZ.border }
+              }
+            >
+              <Icon size={12} />
+              {t(`officialExam.sort.${key}`)}
+            </button>
+          );
+        })}
       </div>
 
       {loading && (
         <div className="flex justify-center py-10">
-          <span className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+          <span className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: QUIZ.border, borderTopColor: QUIZ.text }} />
         </div>
       )}
 
-      {error && <p className="text-red-400 text-sm text-center py-6">{error}</p>}
+      {error && (
+        <p className="text-sm text-center py-6" style={{ color: QUIZ.danger }}>
+          {error}
+        </p>
+      )}
 
       {!loading && !error && entries.length === 0 && (
-        <p className="text-gray-500 text-sm text-center py-12 px-6 leading-relaxed">
+        <p className="text-sm text-center py-12 px-6 leading-relaxed" style={{ color: "#6B7A8A" }}>
           {t("officialExam.emptyLeaderboard")}
         </p>
       )}
@@ -160,30 +166,29 @@ export default function LeaderboardScreen({ onBack, onOpenSettings }) {
       {data?.currentUser && (
         <>
           <div className="flex items-center gap-2 my-3">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-gray-600 text-[10px]">···</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px" style={{ background: QUIZ.border }} />
+            <span className="text-[10px]" style={{ color: "#4B5768" }}>
+              ···
+            </span>
+            <div className="flex-1 h-px" style={{ background: QUIZ.border }} />
           </div>
           <Row entry={data.currentUser} sort={sort} />
         </>
       )}
 
-      <div className="mt-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] px-4 py-3 flex items-start gap-2">
-        <EyeOff size={14} color="#9CA3AF" className="mt-0.5 shrink-0" />
+      <div className="mt-6 rounded-2xl border px-4 py-3 flex items-start gap-2" style={{ background: QUIZ.cardSoft, borderColor: QUIZ.border }}>
+        <EyeOff size={14} color={QUIZ.muted} className="mt-0.5 shrink-0" />
         <div className="flex-1">
-          <p className="text-gray-400 text-xs leading-relaxed">
+          <p className="text-xs leading-relaxed" style={{ color: QUIZ.muted }}>
             {t("officialExam.privacyNotice")}
           </p>
           {onOpenSettings && (
-            <button
-              onClick={onOpenSettings}
-              className="text-xs font-semibold text-gray-300 underline mt-1.5"
-            >
+            <button onClick={onOpenSettings} className="text-xs font-semibold underline mt-1.5" style={{ color: "#D1D5DB" }}>
               {t("officialExam.openSettings")}
             </button>
           )}
         </div>
       </div>
-    </div>
+    </QuizShell>
   );
 }

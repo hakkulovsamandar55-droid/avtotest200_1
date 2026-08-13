@@ -232,84 +232,12 @@ export const api = {
   getExamAnalytics: () => request("/api/admin/exam/analytics"),
   getUserExamSummary: (userId) => request(`/api/admin/users/${userId}/exam-summary`),
 
-  // ===== Haydovchilik maktablari (Driving School) =====
-  schoolMe: () => request("/api/school/me"),
   // Global sozlamalar
   getPublicSettings: () => request("/api/stats/settings"),
   getAdminSettings: () => request("/api/admin/settings"),
   updateAdminSettings: (body) =>
     request("/api/admin/settings", { method: "PATCH", body }),
 
-  schoolJoin: (code) => request("/api/school/join", { method: "POST", body: { code } }),
-  // Guruh kodi oqimi: avval preview (tasdiqlash oynasi), keyin join.
-  schoolInvitePreview: (code) => request(`/api/school/invite/${encodeURIComponent(code)}`),
-  schoolJoinGroup: (code) =>
-    request("/api/school/join-group", { method: "POST", body: { code } }),
-  schoolAddTeacherToGroup: (schoolId, groupId, membershipId) =>
-    request(`/api/school/${schoolId}/groups/${groupId}/teachers`, {
-      method: "POST",
-      body: { membershipId },
-    }),
-  schoolRemoveTeacherFromGroup: (schoolId, groupId, membershipId) =>
-    request(`/api/school/${schoolId}/groups/${groupId}/teachers/${membershipId}`, {
-      method: "DELETE",
-    }),
-  schoolLeave: () => request("/api/school/leave", { method: "POST" }),
-  schoolMyHomework: () => request("/api/school/my-homework"),
-
-  schoolGet: (schoolId) => request(`/api/school/${schoolId}`),
-  schoolUpdate: (schoolId, data) =>
-    request(`/api/school/${schoolId}`, { method: "PATCH", body: data }),
-
-  schoolGroups: (schoolId) => request(`/api/school/${schoolId}/groups`),
-  schoolCreateGroup: (schoolId, name) =>
-    request(`/api/school/${schoolId}/groups`, { method: "POST", body: { name } }),
-
-  schoolTeachers: (schoolId) => request(`/api/school/${schoolId}/teachers`),
-  schoolSearchUsers: (schoolId, q) =>
-    request(`/api/school/${schoolId}/search-users?q=${encodeURIComponent(q)}`),
-  schoolAddTeacher: (schoolId, userId) =>
-    request(`/api/school/${schoolId}/teachers`, { method: "POST", body: { userId } }),
-  schoolAssignTeacherGroup: (schoolId, membershipId, groupId) =>
-    request(`/api/school/${schoolId}/teachers/${membershipId}/group`, {
-      method: "PATCH",
-      body: { groupId },
-    }),
-  schoolSuspendTeacher: (schoolId, membershipId) =>
-    request(`/api/school/${schoolId}/teachers/${membershipId}/suspend`, { method: "PATCH" }),
-  schoolReactivateTeacher: (schoolId, membershipId) =>
-    request(`/api/school/${schoolId}/teachers/${membershipId}/reactivate`, { method: "PATCH" }),
-
-  schoolRemoveMember: (schoolId, membershipId) =>
-    request(`/api/school/${schoolId}/members/${membershipId}`, { method: "DELETE" }),
-  schoolMoveStudent: (schoolId, membershipId, groupId) =>
-    request(`/api/school/${schoolId}/members/${membershipId}/group`, {
-      method: "PATCH",
-      body: { groupId },
-    }),
-
-  schoolStudents: (schoolId, groupId) =>
-    request(`/api/school/${schoolId}/students${groupId ? `?groupId=${groupId}` : ""}`),
-
-  schoolInvitations: (schoolId) => request(`/api/school/${schoolId}/invitations`),
-  schoolCreateInvitation: (schoolId, data) =>
-    request(`/api/school/${schoolId}/invitations`, { method: "POST", body: data }),
-  schoolRevokeInvitation: (schoolId, invitationId) =>
-    request(`/api/school/${schoolId}/invitations/${invitationId}`, { method: "DELETE" }),
-
-  schoolGroupHomework: (schoolId, groupId) =>
-    request(`/api/school/${schoolId}/groups/${groupId}/homework`),
-  schoolCreateHomework: (schoolId, groupId, data) =>
-    request(`/api/school/${schoolId}/groups/${groupId}/homework`, {
-      method: "POST",
-      body: data,
-    }),
-
-  schoolTeacherDashboard: (schoolId, groupId) =>
-    request(
-      `/api/school/${schoolId}/teacher/dashboard${groupId ? `?groupId=${groupId}` : ""}`
-    ),
-  // Maktab chati
   // ===== Savollar banki: saqlangan, xatolar, global statistika =====
   // Premium tariflar — narx DB'da, admin panelidan o'zgartiriladi
   getPremiumPlans: () => request("/api/payments/plans"),
@@ -341,45 +269,6 @@ export const api = {
       method: "POST",
       body: { correctCount, totalCount, category: category ?? null },
     }),
-
-  schoolChats: (schoolId) => request(`/api/school/${schoolId}/chats`),
-  schoolChatUnread: (schoolId) => request(`/api/school/${schoolId}/chats/unread`),
-  schoolOpenChat: (schoolId, membershipId) =>
-    request(`/api/school/${schoolId}/chats`, { method: "POST", body: { membershipId } }),
-  schoolChatMessages: (schoolId, chatId, { before, limit } = {}) => {
-    const params = new URLSearchParams();
-    if (before) params.set("before", before);
-    if (limit) params.set("limit", limit);
-    const qs = params.toString();
-    return request(`/api/school/${schoolId}/chats/${chatId}/messages${qs ? `?${qs}` : ""}`);
-  },
-  schoolSendMessage: (schoolId, chatId, text) =>
-    request(`/api/school/${schoolId}/chats/${chatId}/messages`, {
-      method: "POST",
-      body: { text },
-    }),
-  schoolMarkChatRead: (schoolId, chatId) =>
-    request(`/api/school/${schoolId}/chats/${chatId}/read`, { method: "POST" }),
-
-  schoolStudentProfile: (schoolId, membershipId, days = 14) =>
-    request(`/api/school/${schoolId}/students/${membershipId}/profile?days=${days}`),
-  schoolGroupLeaderboard: (schoolId, groupId) =>
-    request(`/api/school/${schoolId}/groups/${groupId}/leaderboard`),
-  schoolAnalytics: (schoolId) => request(`/api/school/${schoolId}/analytics`),
-
-  // CEO
-  schoolAdminList: (status) =>
-    request(`/api/school/admin/schools${status ? `?status=${status}` : ""}`),
-  schoolAdminCreate: (data) =>
-    request("/api/school/admin/schools", { method: "POST", body: data }),
-  schoolAdminSetStatus: (schoolId, status, reason) =>
-    request(`/api/school/admin/schools/${schoolId}/status`, {
-      method: "PATCH",
-      body: { status, reason },
-    }),
-  schoolAdminDelete: (schoolId) =>
-    request(`/api/school/admin/schools/${schoolId}`, { method: "DELETE" }),
-  schoolAdminAnalytics: () => request("/api/school/admin/analytics"),
 };
 
 // Hali backend/to'lov integratsiyasi ulanmagan tugmalar uchun:

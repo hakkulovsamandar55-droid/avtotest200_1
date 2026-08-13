@@ -53,12 +53,6 @@ const SWIPE_THRESHOLD = 45;
 /**
  * Birinchi marta kirgan foydalanuvchiga ilovaning barcha asosiy
  * bo'limlarini tushuntiradigan to'liq ekranli slayd-shou.
- *
- * MainApp shu componentni faqat `!hasSeenOnboarding()` bo'lganda ko'rsatadi
- * va foydalanuvchi "O'tkazib yuborish" yoki oxirgi slayddagi "Boshlash"
- * tugmasini bosganda `onFinish` chaqiriladi — u yerda `markOnboardingSeen()`
- * chaqirilib, holat localStorage'ga yoziladi, shuning uchun keyingi
- * kirishlarda qayta ko'rsatilmaydi.
  */
 export default function OnboardingSlideshow({ onFinish }) {
   const { t } = useTranslation();
@@ -99,25 +93,21 @@ export default function OnboardingSlideshow({ onFinish }) {
       <div className="flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-1 shrink-0">
         <button
           onClick={goPrev}
-          className={`w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform ${
+          className={`w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center active:scale-90 transition-transform ${
             index === 0 ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
-          style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
           aria-label={t("onboarding.back")}
         >
-          <ChevronLeft size={18} color="var(--text-primary)" />
+          <ChevronLeft size={18} className="text-main" />
         </button>
 
         {!isLast && (
           <button
             onClick={onFinish}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full active:scale-95 transition-transform"
-            style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface border border-line active:scale-95 transition-transform"
           >
-            <span className="text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-              {t("onboarding.skip")}
-            </span>
-            <X size={13} color="var(--text-secondary)" />
+            <span className="text-xs font-semibold text-muted">{t("onboarding.skip")}</span>
+            <X size={13} className="text-muted" />
           </button>
         )}
         {isLast && <div className="w-9 h-9" />}
@@ -127,26 +117,15 @@ export default function OnboardingSlideshow({ onFinish }) {
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <div
           key={slide.key}
-          className="w-[92px] h-[92px] rounded-full flex items-center justify-center mb-7 animate-pop-in"
-          style={{
-            background: "linear-gradient(135deg, var(--accent-from), var(--accent-to))",
-            boxShadow:
-              "0 16px 38px color-mix(in srgb, var(--accent-from) 40%, transparent), inset 0 1px 0 rgba(255,255,255,0.3)",
-          }}
+          className="w-[92px] h-[92px] rounded-full bg-accent flex items-center justify-center mb-7 animate-pop-in"
         >
-          <Icon size={40} color="#FFFFFF" strokeWidth={1.8} />
+          <Icon size={40} className="text-accent-ink" strokeWidth={1.8} />
         </div>
 
-        <h2
-          className="text-[21px] font-extrabold tracking-tight leading-snug"
-          style={{ color: "var(--text-primary)" }}
-        >
+        <h2 className="text-[21px] font-extrabold tracking-tight leading-snug text-main">
           {t(`onboarding.slides.${slide.key}.title`)}
         </h2>
-        <p
-          className="text-[14px] leading-relaxed mt-3 max-w-[320px]"
-          style={{ color: "var(--text-secondary)" }}
-        >
+        <p className="text-[14px] leading-relaxed mt-3 max-w-[320px] text-muted">
           {t(`onboarding.slides.${slide.key}.desc`)}
         </p>
       </div>
@@ -159,26 +138,14 @@ export default function OnboardingSlideshow({ onFinish }) {
               key={s.key}
               onClick={() => setIndex(i)}
               aria-label={`${i + 1}`}
-              className="h-2 rounded-full transition-all duration-200"
-              style={{
-                width: i === index ? 22 : 8,
-                background:
-                  i === index
-                    ? "linear-gradient(90deg, var(--accent-from), var(--accent-to))"
-                    : "var(--track)",
-              }}
+              className={`h-2 rounded-full transition-all duration-200 ${i === index ? "w-[22px] bg-accent" : "w-2 bg-sunken"}`}
             />
           ))}
         </div>
 
         <button
           onClick={goNext}
-          className="w-full rounded-[19px] py-4 font-bold text-[15px] text-white flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
-          style={{
-            background: "linear-gradient(135deg, var(--accent-from), var(--accent-to))",
-            boxShadow:
-              "0 14px 34px color-mix(in srgb, var(--accent-from) 40%, transparent), inset 0 1px 0 rgba(255,255,255,0.3)",
-          }}
+          className="w-full rounded-2xl py-4 font-bold text-[15px] bg-accent text-accent-ink flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
         >
           {isLast ? t("onboarding.start") : t("onboarding.next")}
         </button>

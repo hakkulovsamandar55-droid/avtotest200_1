@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api";
+import { Card } from "../../components/ui";
 
 const ACTION_ICONS = {
   PREMIUM_GRANTED: "👑",
@@ -37,24 +38,22 @@ export default function AdminLogTab() {
 
   return (
     <div>
-      <p className="font-bold text-text-main text-sm mb-3">{t("admin.logs.title")}</p>
+      <p className="font-bold text-main text-sm mb-3">{t("admin.logs.title")}</p>
       <div className="space-y-2">
         {logs.map((log) => (
-          <div key={log.id} className="rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3 flex items-start gap-3">
+          <Card key={log.id} className="px-4 py-3 flex items-start gap-3">
             <span className="text-base leading-none mt-0.5">{ACTION_ICONS[log.action] || "•"}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-text-main text-xs font-semibold">
+              <p className="text-main text-xs font-semibold">
                 {log.actorName} — {log.action.replaceAll("_", " ")}
                 {log.targetLabel ? ` → ${log.targetLabel}` : ""}
               </p>
-              {log.details && <p className="text-text-muted text-[11px] mt-0.5">{log.details}</p>}
-              <p className="text-text-muted text-[10px] mt-0.5">{fmt(log.createdAt)}</p>
+              {log.details && <p className="text-muted text-[11px] mt-0.5">{log.details}</p>}
+              <p className="text-muted text-[10px] mt-0.5">{fmt(log.createdAt)}</p>
             </div>
-          </div>
+          </Card>
         ))}
-        {!loading && logs.length === 0 && (
-          <p className="text-center text-text-muted text-sm mt-10">{t("admin.logs.noLogs")}</p>
-        )}
+        {!loading && logs.length === 0 && <p className="text-center text-muted text-sm mt-10">{t("admin.logs.noLogs")}</p>}
       </div>
     </div>
   );

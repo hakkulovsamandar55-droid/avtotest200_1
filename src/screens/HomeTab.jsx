@@ -5,21 +5,19 @@ import {
   Layers,
   TrafficCone,
   Swords,
-  GraduationCap,
   BookOpen,
   AlertTriangle,
   Bookmark,
   Shuffle,
   ClipboardCheck,
   Flame,
-  NotebookText,
   Lock,
 } from "lucide-react";
 import { api } from "../api";
 import { useSettings } from "../SettingsContext";
 
 /**
- * BOSH SAHIFA — frosted glass uslubi.
+ * BOSH SAHIFA.
  *
  * TUZILMA (yuqoridan pastga, muhimlik tartibida):
  *   1) Salomlashish + ketma-ket kunlar
@@ -27,14 +25,6 @@ import { useSettings } from "../SettingsContext";
  *      bu qaytib kelishga undaydi. Ostida uchta asosiy ko'rsatkich.
  *   3) Rasmiy imtihon — yagona to'q rangli tugma, eng muhim harakat
  *   4) 2 ustunli kafellar — barcha bo'limlarga tez kirish
- *
- * NIMA UCHUN SHUNDAY: avvalgi variantlar (gradient hero + 2x2 grid, keyin
- * "yo'l" metaforasi) yoki shablon edi, yoki mazmundan uzoq. Bu tuzilma
- * foydalanuvchining haqiqiy savoliga javob beradi: "qanchalik tayyorman va
- * bugun nima qildim?"
- *
- * Barcha panellar `bg-card` klassini ishlatadi — shisha ko'rinishi
- * index.css da bir marta berilgan, shuning uchun bu yerda faqat tuzilma.
  */
 export default function HomeTab({
   user,
@@ -44,12 +34,10 @@ export default function HomeTab({
   onOpenOfficialExam,
   onOpenStats,
   onOpenDuel,
-  onOpenSchool,
   onOpenTopics,
   onOpenMistakes,
   onOpenSaved,
   onOpenTricky,
-  onOpenCheatSheet,
   onOpenPremium,
 }) {
   const { t } = useTranslation();
@@ -72,8 +60,8 @@ export default function HomeTab({
   // KAFEL -> IMKONIYAT xaritasi. Admin panelidagi ro'yxat bilan bog'lanadi:
   // admin biror imkoniyatni PREMIUM qilsa, mos kafelda qulf paydo bo'ladi.
   //
-  // Ro'yxatda yo'q kafellar (practice, tickets, signs, school) HAR DOIM
-  // ochiq — bular ilovaning asosiy mazmuni, ularni yopish mantiqsiz.
+  // Ro'yxatda yo'q kafellar (practice, tickets, signs) HAR DOIM ochiq —
+  // bular ilovaning asosiy mazmuni, ularni yopish mantiqsiz.
   const { globalFreeMode, featureAccess } = useSettings();
 
   const TILE_FEATURE = {
@@ -81,14 +69,11 @@ export default function HomeTab({
     mistakes: "mistakes",
     saved: "saved_questions",
     tricky: "tricky_tests",
-    cheatSheet: "cheat_sheet",
     duel: "duel",
   };
 
   // MUHIM: bu FAQAT UI qulfi. Haqiqiy cheklov backendda bo'lishi kerak —
-  // mijoz tomonini chetlab o'tish mumkin. Mahalliy ma'lumotga tayanadigan
-  // bo'limlar (shpargalka, mavzuli testlar) uchun bu amalda yagona to'siq,
-  // shuning uchun ular "yumshoq" cheklov hisoblanadi.
+  // mijoz tomonini chetlab o'tish mumkin.
   function isLocked(tileKey) {
     const feature = TILE_FEATURE[tileKey];
     if (!feature) return false;
@@ -148,25 +133,11 @@ export default function HomeTab({
       onClick: onOpenTricky,
     },
     {
-      key: "cheatSheet",
-      icon: NotebookText,
-      title: t("home.cheatSheet"),
-      sub: t("home.cheatSheetSubtitle"),
-      onClick: onOpenCheatSheet,
-    },
-    {
       key: "duel",
       icon: Swords,
       title: t("home.duel"),
       sub: t("home.duelSubtitle"),
       onClick: onOpenDuel,
-    },
-    {
-      key: "school",
-      icon: GraduationCap,
-      title: t("home.school"),
-      sub: t("home.schoolSubtitle"),
-      onClick: onOpenSchool,
     },
   ];
 
@@ -175,19 +146,14 @@ export default function HomeTab({
       {/* Sarlavha */}
       <div className="flex items-start justify-between">
         <div className="min-w-0">
-          <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
-            {t("home.welcome")}
-          </p>
-          <h1
-            className="text-[23px] font-extrabold truncate tracking-tight"
-            style={{ color: "var(--text-primary)" }}
-          >
+          <p className="text-xs text-muted">{t("home.welcome")}</p>
+          <h1 className="text-[23px] font-extrabold truncate tracking-tight text-main">
             {user?.name || t("home.guest")}
           </h1>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-card border border-card-border px-3 py-2 shrink-0">
-          <Flame size={13} color="#FDBA74" />
-          <span className="text-xs font-bold" style={{ color: "#FDBA74" }}>
+        <div className="flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-2 shrink-0">
+          <Flame size={13} className="text-warning" />
+          <span className="text-xs font-bold text-warning">
             {t("home.streakDays", { days: streak })}
           </span>
         </div>
@@ -196,29 +162,20 @@ export default function HomeTab({
       {/* HAFTALIK RITM + ko'rsatkichlar */}
       <button
         onClick={onOpenStats}
-        className="w-full text-left mt-5 rounded-[26px] bg-card border border-card-border p-[19px] active:scale-[0.995] transition-transform"
+        className="w-full text-left mt-5 rounded-2xl bg-surface border border-line p-[19px] active:scale-[0.99] transition-transform"
       >
         <div className="flex items-center justify-between mb-4">
-          <span
-            className="text-[10px] font-extrabold uppercase tracking-[0.11em]"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.11em] text-muted">
             {t("home.thisWeek")}
           </span>
-          <span
-            className="text-[11px] font-extrabold"
-            style={{ color: "var(--accent-from)" }}
-          >
+          <span className="text-[11px] font-extrabold text-accent">
             {t("home.daysOfSeven", { count: weekly.filter((d) => d.active).length })}
           </span>
         </div>
 
         <WeekStrip days={weekly} t={t} />
 
-        <div
-          className="flex gap-2.5 mt-[17px] pt-[15px] border-t"
-          style={{ borderColor: "var(--border-card)" }}
-        >
+        <div className="flex gap-2.5 mt-[17px] pt-[15px] border-t border-line">
           <Metric value={`${readiness}%`} label={t("home.readinessShort")} />
           <Metric value={`${passChance}%`} label={t("home.passChanceShort")} />
           <Metric value={formatCount(s.totalAnswered)} label={t("home.totalQuestions")} />
@@ -228,19 +185,14 @@ export default function HomeTab({
       {/* RASMIY IMTIHON — yagona to'q rangli harakat */}
       <button
         onClick={onOpenOfficialExam}
-        className="w-full mt-[13px] rounded-[19px] py-4 px-4 font-bold text-sm text-white flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
-        style={{
-          background: "linear-gradient(135deg, var(--exam-from), var(--exam-to))",
-          boxShadow:
-            "0 14px 34px color-mix(in srgb, var(--exam-from) 42%, transparent), inset 0 1px 0 rgba(255,255,255,0.3)",
-        }}
+        className="w-full mt-3 rounded-2xl py-4 px-4 font-bold text-sm bg-accent text-accent-ink flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
       >
         <ClipboardCheck size={17} />
         {t("home.startOfficialExam")}
       </button>
 
       {/* KAFELLAR */}
-      <div className="grid grid-cols-2 gap-[11px] mt-[13px]">
+      <div className="grid grid-cols-2 gap-[11px] mt-3">
         {tiles.map((tile) => {
           const locked = isLocked(tile.key);
           return (
@@ -279,39 +231,22 @@ function WeekStrip({ days, t }) {
         return (
           <div key={i} className="flex-1 text-center">
             <div
-              className="h-[35px] rounded-[10px] flex items-end justify-center pb-[5px]"
-              style={
-                state === "today"
-                  ? {
-                      background:
-                        "linear-gradient(180deg, var(--accent-from), var(--accent-to))",
-                      boxShadow:
-                        "0 6px 18px color-mix(in srgb, var(--accent-from) 45%, transparent), inset 0 1px 0 rgba(255,255,255,0.45)",
-                    }
-                  : state === "done"
-                    ? {
-                        background:
-                          "color-mix(in srgb, var(--accent-from) 18%, transparent)",
-                        boxShadow: "inset 0 1px 0 var(--glass-hi)",
-                      }
-                    : { background: "var(--track)" }
-              }
+              className={`h-[35px] rounded-[10px] flex items-end justify-center pb-[5px] ${
+                state === "today" ? "bg-accent" : state === "done" ? "bg-accent-soft" : "bg-sunken"
+              }`}
             >
               {state !== "empty" && (
                 <span
-                  className="w-[5px] h-[5px] rounded-full block"
-                  style={{
-                    background: state === "today" ? "#FFFFFF" : "var(--accent-from)",
-                  }}
+                  className={`w-[5px] h-[5px] rounded-full block ${
+                    state === "today" ? "bg-accent-ink" : "bg-accent"
+                  }`}
                 />
               )}
             </div>
             <div
-              className="text-[9.5px] mt-[5px]"
-              style={{
-                color: state === "today" ? "var(--accent-from)" : "var(--text-secondary)",
-                fontWeight: state === "today" ? 800 : 500,
-              }}
+              className={`text-[9.5px] mt-[5px] ${
+                state === "today" ? "text-accent font-extrabold" : "text-muted font-medium"
+              }`}
             >
               {letters[i]}
             </div>
@@ -325,18 +260,8 @@ function WeekStrip({ days, t }) {
 function Metric({ value, label }) {
   return (
     <div className="flex-1 min-w-0">
-      <div
-        className="text-[15.5px] font-extrabold tabular-nums"
-        style={{ color: "var(--text-primary)" }}
-      >
-        {value}
-      </div>
-      <div
-        className="text-[9.5px] mt-0.5 truncate"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {label}
-      </div>
+      <div className="text-[15.5px] font-extrabold tabular-nums text-main">{value}</div>
+      <div className="text-[9.5px] mt-0.5 truncate text-muted">{label}</div>
     </div>
   );
 }
@@ -345,26 +270,16 @@ function Tile({ icon: Icon, title, sub, onClick, locked }) {
   return (
     <button
       onClick={onClick}
-      className="rounded-[19px] bg-card border border-card-border p-[15px] text-left active:scale-[0.985] transition-transform relative"
+      className="rounded-2xl bg-surface border border-line p-[15px] text-left active:scale-[0.98] transition-transform relative"
     >
       {locked && (
-        <span
-          className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
-          style={{ background: "rgba(224,166,46,0.16)" }}
-        >
-          <Lock size={11} color="#E0A62E" />
+        <span className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center bg-warning/15">
+          <Lock size={11} className="text-warning" />
         </span>
       )}
-      <Icon size={18} color={locked ? "var(--icon-muted)" : "var(--accent-from)"} />
-      <div
-        className="text-[12.5px] font-bold mt-2.5"
-        style={{ color: "var(--text-primary)" }}
-      >
-        {title}
-      </div>
-      <div className="text-[10px] mt-0.5" style={{ color: "var(--text-secondary)" }}>
-        {sub}
-      </div>
+      <Icon size={18} className={locked ? "text-soft" : "text-accent"} />
+      <div className="text-[12.5px] font-bold mt-2.5 text-main">{title}</div>
+      <div className="text-[10px] mt-0.5 text-muted">{sub}</div>
     </button>
   );
 }
@@ -379,5 +294,5 @@ function clampPct(v) {
 function formatCount(v) {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return "0";
-  return n.toLocaleString("ru-RU").replace(/\u00A0/g, " ");
+  return n.toLocaleString("ru-RU").replace(/ /g, " ");
 }

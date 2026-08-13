@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, X, Crown } from "lucide-react";
-import { ACCENT_FROM, ACCENT_TO } from "../../theme";
 import { api } from "../../api";
+import { Card } from "../../components/ui";
 
 function initials(name) {
   return (name || "?")
@@ -39,56 +39,44 @@ export default function ModeratorUsersTab() {
   return (
     <div>
       <div className="relative mb-3">
-        <Search size={18} color="#9CA3AF" className="absolute left-4 top-1/2 -translate-y-1/2" />
+        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-soft" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("admin.moderator.searchPlaceholder")}
-          className="w-full rounded-2xl bg-card border border-card-border shadow-sm pl-11 pr-10 py-3 text-sm text-text-main outline-none focus:border-gray-300"
+          className="w-full rounded-2xl bg-surface border border-line pl-11 pr-10 py-3 text-sm"
         />
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-card-soft flex items-center justify-center"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-2 flex items-center justify-center"
           >
-            <X size={13} color="#6B7280" />
+            <X size={13} className="text-soft" />
           </button>
         )}
       </div>
 
-      <p className="text-text-muted text-xs mb-3 ml-1">
-        {loading ? "..." : t("admin.resultsCount", { count: users.length })}
-      </p>
+      <p className="text-muted text-xs mb-3 ml-1">{loading ? "..." : t("admin.resultsCount", { count: users.length })}</p>
 
       <div className="space-y-2.5">
         {users.map((user) => (
-          <div
-            key={user.id}
-            className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5"
-          >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-              style={{ background: `linear-gradient(135deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
-            >
+          <Card key={user.id} className="flex items-center gap-3 px-4 py-3.5">
+            <div className="w-11 h-11 rounded-full bg-accent text-accent-ink flex items-center justify-center text-sm font-bold shrink-0">
               {initials(user.name)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-text-main text-sm truncate flex items-center gap-1.5">
+              <p className="font-bold text-main text-sm truncate flex items-center gap-1.5">
                 {user.name}
-                {user.isPremium && <Crown size={13} color="#E0A62E" />}
+                {user.isPremium && <Crown size={13} className="text-warning" />}
               </p>
-              <p className="text-text-muted text-xs truncate">
-                {user.username ? `@${user.username}` : "—"}
-              </p>
+              <p className="text-muted text-xs truncate">{user.username ? `@${user.username}` : "—"}</p>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-text-muted text-[11px]">{fmtDate(user.createdAt)}</p>
+              <p className="text-muted text-[11px]">{fmtDate(user.createdAt)}</p>
             </div>
-          </div>
+          </Card>
         ))}
-        {!loading && users.length === 0 && (
-          <p className="text-center text-text-muted text-sm mt-10">{t("admin.noResults")}</p>
-        )}
+        {!loading && users.length === 0 && <p className="text-center text-muted text-sm mt-10">{t("admin.noResults")}</p>}
       </div>
     </div>
   );

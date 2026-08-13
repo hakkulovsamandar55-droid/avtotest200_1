@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { User, Clock, Cake } from "lucide-react";
 import GradientIcon from "../components/GradientIcon";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { ACCENT_FROM, ACCENT_WARM } from "../theme";
+import { Button } from "../components/ui";
 import { api, setToken } from "../api";
 
 // Foydalanuvchi bir marta to'ldirgan ro'yxatdan o'tish anketasi shu yerda
@@ -36,6 +36,17 @@ const STUDY_TIME_OPTIONS = [
   { value: 60, labelKey: "login.studyTime.min60" },
   { value: 90, labelKey: "login.studyTime.min90plus" },
 ];
+
+function FormField({ icon: Icon, label, children }) {
+  return (
+    <div>
+      <label className="text-xs text-muted mb-1.5 flex items-center gap-1.5">
+        <Icon size={13} /> {label}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 // 1-EKRAN: Ro'yxatdan o'tish (anketa) — Telegram orqali kirish orqa fonda ketadi
 export default function LoginScreen({ onLogin, externalNotice }) {
@@ -119,11 +130,11 @@ export default function LoginScreen({ onLogin, externalNotice }) {
   // yuklanish holatini ko'rsatamiz (forma umuman ko'rinmaydi).
   if (!needsForm) {
     return (
-      <div className="flex flex-col h-full bg-[#0B0B14] text-white px-6 items-center justify-center gap-5">
-        <GradientIcon size={140} />
-        <span className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+      <div className="flex flex-col h-full bg-app px-6 items-center justify-center gap-5">
+        <GradientIcon size={112} />
+        <span className="w-5 h-5 rounded-full border-2 border-line border-t-accent animate-spin" />
         {error && (
-          <p className="text-center text-red-400 text-xs leading-relaxed px-2 max-w-xs">
+          <p className="text-center text-danger text-xs leading-relaxed px-2 max-w-xs">
             {error}
           </p>
         )}
@@ -132,50 +143,35 @@ export default function LoginScreen({ onLogin, externalNotice }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0B0B14] text-white px-6 overflow-y-auto">
+    <div className="flex flex-col h-full bg-app px-6 overflow-y-auto">
       <div className="flex justify-end pt-4">
-        <LanguageSwitcher variant="dark" />
+        <LanguageSwitcher variant="compact" />
       </div>
 
       <div className="flex flex-col items-center gap-5 pt-2 pb-8">
         <GradientIcon />
         <div className="text-center">
-          <h1
-            className="text-3xl font-extrabold tracking-tight"
-            style={{
-              background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_WARM})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+          <h1 className="text-3xl font-extrabold tracking-tight text-main">
             {t("login.title")}
           </h1>
-          <p className="text-white/50 text-sm mt-2 max-w-[280px] mx-auto">
+          <p className="text-muted text-sm mt-2 max-w-[280px] mx-auto">
             {t("login.registerSubtitle")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-4 mt-2">
-          {/* Ism */}
-          <div>
-            <label className="text-xs text-white/50 mb-1.5 flex items-center gap-1.5">
-              <User size={13} /> {t("login.nameLabel")}
-            </label>
+          <FormField icon={User} label={t("login.nameLabel")}>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("login.namePlaceholder")}
               maxLength={80}
-              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-white/30 transition-colors"
+              className="w-full rounded-xl px-4 py-3 text-sm"
             />
-          </div>
+          </FormField>
 
-          {/* Yosh */}
-          <div>
-            <label className="text-xs text-white/50 mb-1.5 flex items-center gap-1.5">
-              <Cake size={13} /> {t("login.ageLabel")}
-            </label>
+          <FormField icon={Cake} label={t("login.ageLabel")}>
             <input
               type="number"
               inputMode="numeric"
@@ -184,72 +180,60 @@ export default function LoginScreen({ onLogin, externalNotice }) {
               value={age}
               onChange={(e) => setAge(e.target.value)}
               placeholder={t("login.agePlaceholder")}
-              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-white/30 transition-colors"
+              className="w-full rounded-xl px-4 py-3 text-sm"
             />
-          </div>
+          </FormField>
 
-          {/* Kuniga qancha shug'ullanadi */}
-          <div>
-            <label className="text-xs text-white/50 mb-1.5 flex items-center gap-1.5">
-              <Clock size={13} /> {t("login.studyTimeLabel")}
-            </label>
+          <FormField icon={Clock} label={t("login.studyTimeLabel")}>
             <div className="grid grid-cols-2 gap-2">
-              {STUDY_TIME_OPTIONS.map((opt) => (
-                <button
-                  type="button"
-                  key={opt.value}
-                  onClick={() => setStudyMinutes(opt.value)}
-                  className="rounded-xl border px-3 py-2.5 text-xs font-medium transition-colors"
-                  style={
-                    studyMinutes === opt.value
-                      ? {
-                          background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_WARM})`,
-                          borderColor: "transparent",
-                          color: "#0B0B14",
-                        }
-                      : {
-                          background: "rgba(255,255,255,0.06)",
-                          borderColor: "rgba(255,255,255,0.1)",
-                          color: "rgba(255,255,255,0.7)",
-                        }
-                  }
-                >
-                  {t(opt.labelKey)}
-                </button>
-              ))}
+              {STUDY_TIME_OPTIONS.map((opt) => {
+                const active = studyMinutes === opt.value;
+                return (
+                  <button
+                    type="button"
+                    key={opt.value}
+                    onClick={() => setStudyMinutes(opt.value)}
+                    className={`rounded-xl px-3 py-2.5 text-xs font-semibold border transition-colors ${
+                      active
+                        ? "bg-accent text-accent-ink border-accent"
+                        : "bg-surface text-muted border-line"
+                    }`}
+                  >
+                    {t(opt.labelKey)}
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </FormField>
 
-          <button
+          <Button
             type="submit"
+            size="lg"
             disabled={!isFormValid || connecting}
-            className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-3.5 font-semibold text-white transition-transform active:scale-[0.98] disabled:opacity-40 mt-2"
-            style={{
-              background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_WARM})`,
-            }}
+            className="w-full mt-2"
           >
             {connecting ? (
               <>
-                <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                <span className="w-4 h-4 rounded-full border-2 border-accent-ink/40 border-t-accent-ink animate-spin" />
                 {t("login.connecting")}
               </>
             ) : (
               t("login.registerButton")
             )}
-          </button>
+          </Button>
 
-          <p className="text-center text-white/30 text-xs leading-relaxed px-2">
+          <p className="text-center text-soft text-xs leading-relaxed px-2">
             {t("login.consent")}
           </p>
           {error && (
-            <p className="text-center text-red-400 text-xs leading-relaxed px-2">
+            <p className="text-center text-danger text-xs leading-relaxed px-2">
               {error}
             </p>
           )}
         </form>
       </div>
 
-      <div className="pb-8 mt-auto text-center text-white/25 text-xs">
+      <div className="pb-8 mt-auto text-center text-soft text-xs">
         @{import.meta.env.VITE_BOT_USERNAME || "pravatezbot"}
       </div>
     </div>

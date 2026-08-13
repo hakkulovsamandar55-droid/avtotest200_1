@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Copy, Check, Users, Gift, Loader2, Crown } from "lucide-react";
+import { Copy, Check, Users, Gift, Loader2, Crown } from "lucide-react";
 import { api } from "../api";
+import { ScreenHeader, Card, Button } from "../components/ui";
 
 /**
  * DO'STLARNI TAKLIF QILISH.
@@ -55,125 +56,72 @@ export default function ReferralScreen({ onBack }) {
 
   return (
     <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 animate-slide-in">
-      <div className="flex items-center gap-3 py-4">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-card-soft border border-card-border flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={17} color="var(--icon-muted)" />
-        </button>
-        <h1 className="text-lg font-extrabold" style={{ color: "var(--text-primary)" }}>
-          {t("referral.title")}
-        </h1>
-      </div>
+      <ScreenHeader title={t("referral.title")} onBack={onBack} />
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <Loader2 size={22} className="animate-spin" color="var(--icon-muted)" />
+          <Loader2 size={22} className="animate-spin text-soft" />
         </div>
       ) : error && !data ? (
-        <p className="text-red-400 text-sm">{error}</p>
+        <p className="text-danger text-sm">{error}</p>
       ) : data ? (
         <>
           {/* Tushuntirish */}
-          <div className="rounded-2xl bg-card border border-card-border p-4">
+          <Card className="p-4">
             <div className="flex items-start gap-3">
-              <Gift size={18} color="var(--accent-from)" className="shrink-0 mt-0.5" />
-              <p
-                className="text-xs leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {t("referral.howItWorks")}
-              </p>
+              <Gift size={18} className="shrink-0 mt-0.5 text-accent" />
+              <p className="text-xs leading-relaxed text-muted">{t("referral.howItWorks")}</p>
             </div>
-          </div>
+          </Card>
 
           {/* Kod */}
-          <div className="rounded-2xl bg-card border border-card-border p-4 mt-3">
-            <p
-              className="text-[10px] font-extrabold uppercase tracking-[0.11em] mb-2"
-              style={{ color: "var(--text-secondary)" }}
-            >
+          <Card className="p-4 mt-3">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.11em] mb-2 text-muted">
               {t("referral.yourCode")}
             </p>
             <div className="flex items-center gap-2">
-              <code
-                className="flex-1 text-xl font-extrabold tracking-wider tabular-nums"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {data.code}
-              </code>
+              <code className="flex-1 text-xl font-extrabold tracking-wider tabular-nums text-main">{data.code}</code>
               <button
                 onClick={() => copy(data.code, "code")}
-                className="w-9 h-9 rounded-xl bg-card-soft border border-card-border flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-xl bg-surface-2 border border-line flex items-center justify-center shrink-0"
                 aria-label={t("referral.copy")}
               >
-                {copied === "code" ? (
-                  <Check size={15} color="#34D399" />
-                ) : (
-                  <Copy size={15} color="var(--icon-muted)" />
-                )}
+                {copied === "code" ? <Check size={15} className="text-success" /> : <Copy size={15} className="text-soft" />}
               </button>
             </div>
-          </div>
+          </Card>
 
           {/* Havola — bot username sozlanmagan bo'lsa ko'rsatilmaydi */}
           {data.link && (
-            <button
-              onClick={() => copy(data.link, "link")}
-              className="w-full mt-3 rounded-[19px] py-4 px-4 font-bold text-sm text-white flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
-              style={{
-                background: "linear-gradient(135deg, var(--accent-from), var(--accent-to))",
-              }}
-            >
+            <Button onClick={() => copy(data.link, "link")} size="lg" className="w-full mt-3">
               {copied === "link" ? <Check size={16} /> : <Copy size={16} />}
               {copied === "link" ? t("referral.copied") : t("referral.copyLink")}
-            </button>
+            </Button>
           )}
 
           {/* Taklif qilinganlar */}
           <div className="flex items-center gap-2 mt-7 mb-3">
-            <Users size={15} color="var(--icon-muted)" />
-            <p
-              className="text-[10px] font-extrabold uppercase tracking-[0.11em]"
-              style={{ color: "var(--text-secondary)" }}
-            >
+            <Users size={15} className="text-soft" />
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.11em] text-muted">
               {t("referral.invitedCount", { count: data.invitedCount })}
             </p>
           </div>
 
           {data.invited.length === 0 ? (
-            <p
-              className="text-xs text-center py-8 leading-relaxed"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              {t("referral.noneYet")}
-            </p>
+            <p className="text-xs text-center py-8 leading-relaxed text-muted">{t("referral.noneYet")}</p>
           ) : (
             <div className="space-y-2">
               {data.invited.map((u, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 rounded-2xl bg-card border border-card-border px-4 py-3"
-                >
-                  <div className="w-9 h-9 rounded-full bg-card-soft flex items-center justify-center shrink-0">
-                    <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                      {(u.name || "?").charAt(0).toUpperCase()}
-                    </span>
+                <Card key={i} className="flex items-center gap-3 px-4 py-3">
+                  <div className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold text-main">{(u.name || "?").charAt(0).toUpperCase()}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p
-                      className="text-[13px] font-semibold truncate"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      {u.name}
-                    </p>
-                    <p className="text-[10px] mt-0.5" style={{ color: "var(--text-secondary)" }}>
-                      {formatDate(u.joinedAt)}
-                    </p>
+                    <p className="text-[13px] font-semibold truncate text-main">{u.name}</p>
+                    <p className="text-[10px] mt-0.5 text-muted">{formatDate(u.joinedAt)}</p>
                   </div>
-                  {u.isPremium && <Crown size={14} color="#FDBA74" className="shrink-0" />}
-                </div>
+                  {u.isPremium && <Crown size={14} className="shrink-0 text-warning" />}
+                </Card>
               ))}
             </div>
           )}

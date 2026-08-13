@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Bell } from "lucide-react";
-import { ACCENT_FROM } from "../../theme";
 import { api } from "../../api";
 
 const TYPE_ICONS = {
@@ -62,46 +61,43 @@ export default function NotificationsBell({ onOpenLink }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-9 h-9 rounded-full bg-card border border-card-border shadow-sm flex items-center justify-center relative"
+        className="w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center relative"
       >
-        <Bell size={17} color="var(--icon-muted)" />
+        <Bell size={17} className="text-soft" />
         {unreadCount > 0 && (
-          <span
-            className="absolute -top-1 -right-1 min-w-[16px] h-[16px] rounded-full text-[9px] font-bold text-white flex items-center justify-center px-1"
-            style={{ background: ACCENT_FROM }}
-          >
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] rounded-full text-[9px] font-bold text-accent-ink flex items-center justify-center px-1 bg-accent">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 w-80 max-w-[85vw] max-h-96 overflow-y-auto rounded-2xl bg-solid border border-card-border shadow-xl z-50">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-card-border sticky top-0 bg-solid z-10">
-            <p className="font-bold text-text-main text-sm">{t("admin.notifications.title")}</p>
+        <div className="absolute right-0 top-11 w-80 max-w-[85vw] max-h-96 overflow-y-auto rounded-2xl bg-modal border border-line shadow-xl z-50">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-line sticky top-0 bg-modal z-10">
+            <p className="font-bold text-main text-sm">{t("admin.notifications.title")}</p>
             {unreadCount > 0 && (
-              <button onClick={handleMarkAll} className="text-[11px] font-semibold" style={{ color: ACCENT_FROM }}>
+              <button onClick={handleMarkAll} className="text-[11px] font-semibold text-accent">
                 {t("admin.notifications.markAllRead")}
               </button>
             )}
           </div>
           {notifications.length === 0 ? (
-            <p className="text-center text-text-muted text-xs py-8">{t("admin.notifications.empty")}</p>
+            <p className="text-center text-muted text-xs py-8">{t("admin.notifications.empty")}</p>
           ) : (
             notifications.map((n) => (
               <button
                 key={n.id}
                 onClick={() => handleClick(n)}
-                className="w-full flex items-start gap-2.5 px-4 py-3 text-left border-b border-card-border last:border-0 active:bg-card-soft"
+                className="w-full flex items-start gap-2.5 px-4 py-3 text-left border-b border-line last:border-0 active:bg-surface-2"
                 style={{ opacity: n.isRead ? 0.6 : 1 }}
               >
                 <span className="text-base leading-none mt-0.5">{TYPE_ICONS[n.type] || "🔔"}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-text-main text-xs font-semibold truncate">{n.title}</p>
-                  {n.body && <p className="text-text-muted text-[11px] truncate">{n.body}</p>}
-                  <p className="text-text-muted text-[10px] mt-0.5">{fmt(n.createdAt)}</p>
+                  <p className="text-main text-xs font-semibold truncate">{n.title}</p>
+                  {n.body && <p className="text-muted text-[11px] truncate">{n.body}</p>}
+                  <p className="text-muted text-[10px] mt-0.5">{fmt(n.createdAt)}</p>
                 </div>
-                {!n.isRead && <span className="w-2 h-2 rounded-full shrink-0 mt-1.5" style={{ background: ACCENT_FROM }} />}
+                {!n.isRead && <span className="w-2 h-2 rounded-full shrink-0 mt-1.5 bg-accent" />}
               </button>
             ))
           )}

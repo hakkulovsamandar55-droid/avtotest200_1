@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, Loader2, Shuffle, AlertTriangle } from "lucide-react";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { api } from "../api";
 import TestScreen from "./TestScreen";
+import { ScreenHeader, Card } from "../components/ui";
 
 /**
  * CHALG'ITUVCHI TESTLAR.
@@ -48,7 +49,7 @@ export default function TrickyTestScreen({ onBack }) {
     return (
       <Shell onBack={onBack} title={t("home.trickyTests")}>
         <div className="flex justify-center py-20">
-          <Loader2 size={22} className="animate-spin" color="var(--icon-muted)" />
+          <Loader2 size={22} className="animate-spin text-soft" />
         </div>
       </Shell>
     );
@@ -57,7 +58,7 @@ export default function TrickyTestScreen({ onBack }) {
   if (error) {
     return (
       <Shell onBack={onBack} title={t("home.trickyTests")}>
-        <p className="text-red-400 text-sm mt-4">{error}</p>
+        <p className="text-danger text-sm mt-4">{error}</p>
       </Shell>
     );
   }
@@ -67,19 +68,12 @@ export default function TrickyTestScreen({ onBack }) {
   if (questions.length < 5) {
     return (
       <Shell onBack={onBack} title={t("home.trickyTests")}>
-        <div className="rounded-2xl bg-card border border-card-border p-5 mt-4">
+        <div className="rounded-2xl bg-surface border border-line p-5 mt-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle size={18} color="#FBBF24" className="shrink-0 mt-0.5" />
+            <AlertTriangle size={18} className="shrink-0 mt-0.5 text-warning" />
             <div>
-              <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                {t("tricky.notEnoughTitle")}
-              </p>
-              <p
-                className="text-xs mt-2 leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                {t("tricky.notEnoughBody")}
-              </p>
+              <p className="text-sm font-bold text-main">{t("tricky.notEnoughTitle")}</p>
+              <p className="text-xs mt-2 leading-relaxed text-muted">{t("tricky.notEnoughBody")}</p>
             </div>
           </div>
         </div>
@@ -90,13 +84,7 @@ export default function TrickyTestScreen({ onBack }) {
   // TestScreen qayta ishlatiladi — oqim aynan bir xil (savol, javob,
   // darhol fikr-mulohaza, natija). Alohida ekran yozish kodni takrorlash
   // bo'lardi.
-  return (
-    <TestScreen
-      customQuestions={questions}
-      customTitle={t("home.trickyTests")}
-      onExit={onBack}
-    />
-  );
+  return <TestScreen customQuestions={questions} customTitle={t("home.trickyTests")} onExit={onBack} />;
 }
 
 function Shell({ children, onBack, title }) {
@@ -105,15 +93,13 @@ function Shell({ children, onBack, title }) {
       <div className="flex items-center gap-3 py-4">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-full bg-card-soft border border-card-border flex items-center justify-center shrink-0"
+          className="w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center shrink-0"
         >
-          <ChevronLeft size={17} color="var(--icon-muted)" />
+          <ChevronLeft size={17} className="text-muted" />
         </button>
         <div className="flex items-center gap-2">
-          <Shuffle size={17} color="var(--accent-from)" />
-          <h1 className="text-lg font-extrabold" style={{ color: "var(--text-primary)" }}>
-            {title}
-          </h1>
+          <Shuffle size={17} className="text-accent" />
+          <h1 className="text-lg font-extrabold text-main">{title}</h1>
         </div>
       </div>
       {children}

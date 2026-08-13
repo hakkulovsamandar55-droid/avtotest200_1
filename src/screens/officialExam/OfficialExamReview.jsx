@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Check, X, MinusCircle } from "lucide-react";
+import { Check, X, MinusCircle } from "lucide-react";
 import { api } from "../../api";
 import QuestionCard from "../../components/exam/QuestionCard";
+import { QuizShell, QuizHeader } from "../../components/exam/QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 const FILTERS = ["all", "wrong", "skipped"];
 
@@ -51,45 +53,45 @@ export default function OfficialExamReview({ examId, onBack }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 bg-[#0F1424] min-h-full text-white animate-slide-in">
-      <div className="flex items-center gap-3 mb-5">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={20} color="#E5E7EB" />
-        </button>
-        <h1 className="text-lg font-extrabold">{t("officialExam.reviewTitle")}</h1>
-      </div>
+    <QuizShell>
+      <QuizHeader title={t("officialExam.reviewTitle")} onBack={onBack} />
 
       {loading && (
         <div className="flex justify-center py-10">
-          <span className="w-6 h-6 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+          <span className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: QUIZ.border, borderTopColor: QUIZ.text }} />
         </div>
       )}
 
-      {error && <p className="text-red-400 text-sm text-center py-6">{error}</p>}
+      {error && (
+        <p className="text-sm text-center py-6" style={{ color: QUIZ.danger }}>
+          {error}
+        </p>
+      )}
 
       {!loading && !error && (
         <>
           <div className="flex gap-2 mb-5">
-            {FILTERS.map((key) => (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                className={`flex-1 rounded-xl py-2 text-xs font-bold transition-colors ${
-                  filter === key
-                    ? "bg-white text-[#0F1424]"
-                    : "bg-white/[0.05] text-gray-400 border border-white/10"
-                }`}
-              >
-                {t(`officialExam.filter.${key}`)} ({counts[key]})
-              </button>
-            ))}
+            {FILTERS.map((key) => {
+              const active = filter === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  className="flex-1 rounded-xl py-2 text-xs font-bold transition-colors border"
+                  style={
+                    active
+                      ? { background: QUIZ.text, color: QUIZ.bg, borderColor: QUIZ.text }
+                      : { background: QUIZ.card, color: QUIZ.muted, borderColor: QUIZ.border }
+                  }
+                >
+                  {t(`officialExam.filter.${key}`)} ({counts[key]})
+                </button>
+              );
+            })}
           </div>
 
           {visible.length === 0 && (
-            <p className="text-gray-500 text-sm text-center py-10">
+            <p className="text-sm text-center py-10" style={{ color: "#6B7A8A" }}>
               {t("officialExam.noQuestionsInFilter")}
             </p>
           )}
@@ -98,23 +100,24 @@ export default function OfficialExamReview({ examId, onBack }) {
             {visible.map((q) => (
               <div
                 key={q.id}
-                className={`rounded-3xl border p-4 ${
+                className="rounded-3xl border p-4"
+                style={
                   q.isSkipped
-                    ? "border-white/10 bg-white/[0.02]"
+                    ? { borderColor: QUIZ.border, background: QUIZ.cardSoft }
                     : q.isCorrect
-                    ? "border-emerald-500/25 bg-emerald-500/[0.04]"
-                    : "border-red-500/25 bg-red-500/[0.04]"
-                }`}
+                    ? { borderColor: "rgba(52,211,153,0.25)", background: "rgba(52,211,153,0.04)" }
+                    : { borderColor: "rgba(248,113,113,0.25)", background: "rgba(248,113,113,0.04)" }
+                }
               >
                 <div className="flex items-center gap-2 mb-4">
                   {q.isSkipped ? (
-                    <MinusCircle size={15} color="#9CA3AF" />
+                    <MinusCircle size={15} color={QUIZ.muted} />
                   ) : q.isCorrect ? (
-                    <Check size={15} color="#34D399" />
+                    <Check size={15} color={QUIZ.success} />
                   ) : (
-                    <X size={15} color="#F87171" />
+                    <X size={15} color={QUIZ.danger} />
                   )}
-                  <span className="text-xs font-bold text-gray-400">
+                  <span className="text-xs font-bold" style={{ color: QUIZ.muted }}>
                     {t("officialExam.questionNumber", { number: q.index + 1 })}
                   </span>
                 </div>
@@ -131,6 +134,6 @@ export default function OfficialExamReview({ examId, onBack }) {
           </div>
         </>
       )}
-    </div>
+    </QuizShell>
   );
 }

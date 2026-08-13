@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  ChevronLeft,
   ClipboardCheck,
   Clock,
   Target,
@@ -12,15 +11,18 @@ import {
   Trophy,
 } from "lucide-react";
 import { api } from "../../api";
-import { ACCENT_FROM, ACCENT_TO } from "../../theme";
+import { QuizShell, QuizHeader, QuizButton } from "../../components/exam/QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 function RuleRow({ icon: Icon, text }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0">
-        <Icon size={15} color="#D1D5DB" />
+      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: QUIZ.cardSoft }}>
+        <Icon size={15} color={QUIZ.muted} />
       </div>
-      <p className="text-sm text-gray-300 leading-snug pt-1.5">{text}</p>
+      <p className="text-sm leading-snug pt-1.5" style={{ color: "#D1D5DB" }}>
+        {text}
+      </p>
     </div>
   );
 }
@@ -97,30 +99,19 @@ export default function OfficialExamIntro({
   const limitReached = eligibility && !eligibility.isPremium && eligibility.remaining === 0 && !hasActive;
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 bg-[#0F1424] min-h-full text-white animate-slide-in">
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={20} color="#E5E7EB" />
-        </button>
-        <h1 className="text-xl font-extrabold">{t("officialExam.title")}</h1>
-      </div>
+    <QuizShell>
+      <QuizHeader title={t("officialExam.title")} onBack={onBack} />
 
-      <div className="flex flex-col items-center text-center mb-7">
-        <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center mb-4"
-          style={{ background: `linear-gradient(135deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
-        >
-          <ClipboardCheck size={34} color="white" />
+      <div className="flex flex-col items-center text-center mb-7 mt-2">
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-4" style={{ background: QUIZ.accent }}>
+          <ClipboardCheck size={34} color={QUIZ.accentInk} />
         </div>
-        <p className="text-gray-400 text-sm leading-relaxed px-4">
+        <p className="text-sm leading-relaxed px-4" style={{ color: QUIZ.muted }}>
           {t("officialExam.introSubtitle")}
         </p>
       </div>
 
-      <div className="rounded-3xl bg-white/[0.03] border border-white/[0.06] p-5 space-y-4 mb-6">
+      <div className="rounded-3xl border p-5 space-y-4 mb-6" style={{ background: QUIZ.cardSoft, borderColor: QUIZ.border }}>
         <RuleRow icon={ClipboardCheck} text={t("officialExam.rule.questions")} />
         <RuleRow icon={Clock} text={t("officialExam.rule.duration")} />
         <RuleRow icon={Target} text={t("officialExam.rule.passing")} />
@@ -130,77 +121,68 @@ export default function OfficialExamIntro({
 
       {loading && (
         <div className="flex justify-center py-4">
-          <span className="w-5 h-5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+          <span
+            className="w-5 h-5 rounded-full border-2 animate-spin"
+            style={{ borderColor: QUIZ.border, borderTopColor: QUIZ.text }}
+          />
         </div>
       )}
 
       {!loading && eligibility && !eligibility.isPremium && !hasActive && (
-        <div className="rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 mb-4 text-center">
-          <p className="text-xs text-gray-400">
-            {t("officialExam.dailyLimitInfo", {
-              used: eligibility.usedToday,
-              limit: eligibility.dailyLimit,
-            })}
+        <div className="rounded-2xl border px-4 py-3 mb-4 text-center" style={{ background: QUIZ.card, borderColor: QUIZ.border }}>
+          <p className="text-xs" style={{ color: QUIZ.muted }}>
+            {t("officialExam.dailyLimitInfo", { used: eligibility.usedToday, limit: eligibility.dailyLimit })}
           </p>
         </div>
       )}
 
       {error && (
-        <p className="text-red-400 text-xs text-center mb-4 leading-relaxed">{error}</p>
+        <p className="text-xs text-center mb-4 leading-relaxed" style={{ color: QUIZ.danger }}>
+          {error}
+        </p>
       )}
 
       {/* 1-holat: tugallanmagan imtihon */}
       {!loading && hasActive && (
         <div className="space-y-3 mb-4">
-          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 px-4 py-3">
-            <p className="text-amber-300 text-xs leading-relaxed">
+          <div className="rounded-2xl border px-4 py-3" style={{ background: "rgba(251,191,36,0.1)", borderColor: "rgba(251,191,36,0.3)" }}>
+            <p className="text-xs leading-relaxed" style={{ color: QUIZ.warning }}>
               {t("officialExam.resumeNotice")}
             </p>
           </div>
-          <button
-            onClick={handleStart}
-            disabled={starting}
-            className="w-full rounded-2xl py-3.5 font-bold text-white text-sm active:scale-[0.98] transition-transform disabled:opacity-50"
-            style={{ background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
-          >
+          <QuizButton onClick={handleStart} disabled={starting}>
             {t("officialExam.continueExam")}
-          </button>
-          <button
-            onClick={handleAbandon}
-            disabled={starting}
-            className="w-full rounded-2xl py-3 font-semibold text-sm text-gray-400 border border-white/10 disabled:opacity-50"
-          >
+          </QuizButton>
+          <QuizButton variant="secondary" onClick={handleAbandon} disabled={starting}>
             {t("officialExam.cancelExam")}
-          </button>
+          </QuizButton>
         </div>
       )}
 
       {/* 2-holat: boshlash mumkin */}
       {!loading && !hasActive && canStart && (
-        <button
-          onClick={handleStart}
-          disabled={starting}
-          className="w-full rounded-2xl py-4 font-extrabold text-white text-base active:scale-[0.98] transition-transform disabled:opacity-50 mb-4"
-          style={{ background: `linear-gradient(90deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
-        >
-          {starting ? t("officialExam.starting") : t("officialExam.startExam")}
-        </button>
+        <div className="mb-4">
+          <QuizButton onClick={handleStart} disabled={starting} className="py-4 text-base">
+            {starting ? t("officialExam.starting") : t("officialExam.startExam")}
+          </QuizButton>
+        </div>
       )}
 
       {/* 3-holat: limit tugagan */}
       {!loading && limitReached && (
-        <div className="rounded-3xl p-5 mb-4 text-center"
-          style={{ background: "linear-gradient(160deg, rgba(245,197,66,0.14), rgba(201,152,43,0.05))", boxShadow: "0 0 0 1px rgba(245,197,66,0.3) inset" }}
+        <div
+          className="rounded-3xl p-5 mb-4 text-center border"
+          style={{ background: "rgba(251,191,36,0.08)", borderColor: "rgba(251,191,36,0.3)" }}
         >
-          <Crown size={28} color="#F5C542" className="mx-auto mb-3" />
+          <Crown size={28} color={QUIZ.warning} className="mx-auto mb-3" />
           <p className="font-bold text-sm mb-1">{t("officialExam.limitTitle")}</p>
-          <p className="text-gray-400 text-xs leading-relaxed mb-4">
+          <p className="text-xs leading-relaxed mb-4" style={{ color: QUIZ.muted }}>
             {t("officialExam.limitBody")}
           </p>
           <button
             onClick={onOpenPremium}
             className="w-full rounded-2xl py-3 font-bold text-sm"
-            style={{ background: "linear-gradient(90deg, #F5C542, #C9982B)", color: "#3B2C00" }}
+            style={{ background: QUIZ.warning, color: QUIZ.accentInk }}
           >
             {t("officialExam.seePremium")}
           </button>
@@ -210,23 +192,25 @@ export default function OfficialExamIntro({
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={onOpenHistory}
-          className="rounded-2xl border border-white/10 bg-white/[0.03] py-3 flex flex-col items-center gap-1.5 active:scale-[0.98] transition-transform"
+          className="rounded-2xl border py-3 flex flex-col items-center gap-1.5 active:scale-[0.98] transition-transform"
+          style={{ borderColor: QUIZ.border, background: QUIZ.cardSoft }}
         >
-          <History size={17} color="#9CA3AF" />
-          <span className="text-xs font-semibold text-gray-300">
+          <History size={17} color={QUIZ.muted} />
+          <span className="text-xs font-semibold" style={{ color: "#D1D5DB" }}>
             {t("officialExam.history")}
           </span>
         </button>
         <button
           onClick={onOpenLeaderboard}
-          className="rounded-2xl border border-white/10 bg-white/[0.03] py-3 flex flex-col items-center gap-1.5 active:scale-[0.98] transition-transform"
+          className="rounded-2xl border py-3 flex flex-col items-center gap-1.5 active:scale-[0.98] transition-transform"
+          style={{ borderColor: QUIZ.border, background: QUIZ.cardSoft }}
         >
-          <Trophy size={17} color="#F5C542" />
-          <span className="text-xs font-semibold text-gray-300">
+          <Trophy size={17} color={QUIZ.warning} />
+          <span className="text-xs font-semibold" style={{ color: "#D1D5DB" }}>
             {t("officialExam.leaderboard")}
           </span>
         </button>
       </div>
-    </div>
+    </QuizShell>
   );
 }

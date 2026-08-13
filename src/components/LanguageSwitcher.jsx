@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe, Check } from "lucide-react";
 import { LANGUAGES } from "../i18n";
+import { ListRow } from "./ui";
 
 // Til tanlovchi — ikki ko'rinishda ishlaydi:
-//  variant="dark"  -> Login ekrani uchun (tim fon ustida)
-//  variant="row"   -> Sozlamalar ro'yxatidagi qator sifatida
+//  variant="compact" -> Login ekrani uchun (kichik pill tugma)
+//  variant="row"      -> Sozlamalar ro'yxatidagi qator sifatida
 export default function LanguageSwitcher({ variant = "row" }) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -27,44 +28,29 @@ export default function LanguageSwitcher({ variant = "row" }) {
   };
 
   const Dropdown = () => (
-    <div
-      className={`absolute z-30 mt-2 w-56 rounded-2xl overflow-hidden shadow-xl right-0 ${
-        variant === "dark"
-          ? "bg-[#17171F] border border-white/10"
-          : "bg-card border border-card-border"
-      }`}
-    >
+    <div className="absolute z-30 mt-2 w-56 rounded-2xl overflow-hidden shadow-xl right-0 bg-modal border border-line">
       {LANGUAGES.map(({ code, nativeKey }) => {
         const active = i18n.language === code;
         return (
           <button
             key={code}
             onClick={() => handleSelect(code)}
-            className={`w-full flex items-center justify-between px-4 py-3 text-sm text-left transition-colors ${
-              variant === "dark"
-                ? "text-white/80 hover:bg-white/5"
-                : "text-text-main hover:bg-card-soft"
-            }`}
+            className="w-full flex items-center justify-between px-4 py-3 text-sm text-left text-main active:bg-surface-2 transition-colors"
           >
             <span>{t(`languageNames.${nativeKey}`)}</span>
-            {active && (
-              <Check
-                size={16}
-                color={variant === "dark" ? "#A855F7" : "var(--accent-from)"}
-              />
-            )}
+            {active && <Check size={16} className="text-accent" />}
           </button>
         );
       })}
     </div>
   );
 
-  if (variant === "dark") {
+  if (variant === "compact") {
     return (
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70"
+          className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs text-muted"
         >
           <Globe size={13} />
           {currentLabel}
@@ -76,16 +62,7 @@ export default function LanguageSwitcher({ variant = "row" }) {
 
   return (
     <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3.5 text-left"
-      >
-        <Globe size={18} color="var(--icon-muted)" />
-        <span className="flex-1 font-medium text-text-main text-sm">
-          {t("settings.language")}
-        </span>
-        <span className="text-text-muted text-sm">{currentLabel}</span>
-      </button>
+      <ListRow icon={Globe} label={t("settings.language")} right={<span className="text-muted text-sm">{currentLabel}</span>} onClick={() => setOpen((o) => !o)} />
       {open && <Dropdown />}
     </div>
   );

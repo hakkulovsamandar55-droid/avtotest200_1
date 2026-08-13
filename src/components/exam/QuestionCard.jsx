@@ -1,6 +1,8 @@
 import React from "react";
-import { Check, X, Info, MinusCircle } from "lucide-react";
+import { Info, MinusCircle } from "lucide-react";
 import QuestionImage from "../QuestionImage";
+import { OptionButton } from "./QuizUI";
+import { QUIZ } from "../../quizTheme";
 
 /**
  * Savol kartasi — ikki rejimda ishlaydi:
@@ -21,8 +23,6 @@ export default function QuestionCard({
   chosenIndex = null,
   onChoose,
   explanationLabel,
-  correctAnswerLabel,
-  yourAnswerLabel,
   skippedLabel,
 }) {
   const isReview = mode === "review";
@@ -30,79 +30,64 @@ export default function QuestionCard({
 
   return (
     <div>
-      {/* Sahna rasmi ham, yo'l belgisi ham shu komponent orqali chiziladi —
-          ajratish mantiqi QuestionImage ichida. */}
-      <QuestionImage
-        image={question.image}
-        sceneMaxHeight={isReview ? 200 : 260}
-      />
+      <QuestionImage image={question.image} sceneMaxHeight={isReview ? 200 : 260} />
 
-      <h2 className="text-[17px] font-bold leading-snug mb-5 text-white">
-        {question.text}
-      </h2>
+      <h2 className="text-[17px] font-bold leading-snug mb-5">{question.text}</h2>
 
       <div className="space-y-3">
         {question.options.map((opt, i) => {
           const isChosen = chosenIndex === i;
           const isCorrectOpt = isReview && i === correctIndex;
 
-          // Javob berish rejimi: faqat tanlanganini ajratamiz, to'g'ri/xato
-          // haqida hech qanday ishora bermaymiz.
-          let cls = "border-white/10 bg-white/[0.04] text-white/90";
-          let icon = null;
-
-          if (!isReview && isChosen) {
-            cls = "border-white/70 bg-white/[0.12] text-white";
-          }
-
+          let state = "idle";
+          if (!isReview && isChosen) state = "chosen";
           if (isReview) {
-            if (isCorrectOpt) {
-              cls = "border-emerald-500/60 bg-emerald-500/10 text-emerald-300";
-              icon = <Check size={18} className="shrink-0" color="#34D399" />;
-            } else if (isChosen) {
-              cls = "border-red-500/60 bg-red-500/10 text-red-300";
-              icon = <X size={18} className="shrink-0" color="#F87171" />;
-            } else {
-              cls = "border-white/5 bg-white/[0.02] text-white/40";
-            }
+            if (isCorrectOpt) state = "correct";
+            else if (isChosen) state = "wrong";
+            else state = "dimmed";
           }
 
           return (
-            <button
+            <OptionButton
               key={i}
+              letter={String.fromCharCode(65 + i)}
+              text={opt}
+              state={state}
               onClick={() => !isReview && onChoose?.(i)}
               disabled={isReview}
-              className={`w-full text-left rounded-2xl border px-4 py-3.5 flex items-center gap-3 transition-colors ${cls} ${
-                isReview ? "" : "active:scale-[0.99]"
-              }`}
-            >
-              <span className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-xs font-bold shrink-0">
-                {String.fromCharCode(65 + i)}
-              </span>
-              <span className="flex-1 text-sm leading-snug">{opt}</span>
-              {icon}
-            </button>
+            />
           );
         })}
       </div>
 
       {isReview && question.isSkipped && (
-        <div className="mt-4 flex items-start gap-2 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3">
-          <MinusCircle size={15} className="mt-0.5 shrink-0" color="#9CA3AF" />
-          <p className="text-xs text-gray-400 leading-relaxed">{skippedLabel}</p>
+        <div
+          className="mt-4 flex items-start gap-2 rounded-2xl border px-4 py-3"
+          style={{ background: QUIZ.card, borderColor: QUIZ.border }}
+        >
+          <MinusCircle size={15} className="mt-0.5 shrink-0" color={QUIZ.muted} />
+          <p className="text-xs leading-relaxed" style={{ color: QUIZ.muted }}>
+            {skippedLabel}
+          </p>
         </div>
       )}
 
       {/* Izoh ixtiyoriy — savol bazasida hozircha yo'q, bosqichma-bosqich
           qo'shiladi. Bo'lmasa bu blok umuman ko'rinmaydi. */}
       {isReview && question.explanation && (
-        <div className="mt-4 flex items-start gap-2 rounded-2xl bg-sky-500/10 border border-sky-500/25 px-4 py-3">
-          <Info size={15} className="mt-0.5 shrink-0" color="#7DD3FC" />
+        <div
+          className="mt-4 flex items-start gap-2 rounded-2xl border px-4 py-3"
+          style={{ background: "rgba(45,212,191,0.08)", borderColor: "rgba(45,212,191,0.25)" }}
+        >
+          <Info size={15} className="mt-0.5 shrink-0" color={QUIZ.accent} />
           <div>
-            <p className="text-[11px] font-bold text-sky-300 uppercase tracking-wide mb-1">
+            <p
+              className="text-[11px] font-bold uppercase tracking-wide mb-1"
+              style={{ color: QUIZ.accent }}
+            >
               {explanationLabel}
             </p>
-            <p className="text-xs text-sky-100/80 leading-relaxed">
+            <p className="text-xs leading-relaxed" style={{ color: QUIZ.muted }}>
               {question.explanation}
             </p>
           </div>

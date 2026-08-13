@@ -3,43 +3,30 @@
 export function createFakeDb() {
   const db = {
     examAttempt: [], examEvent: [], attempt: [], activityLog: [], user: [],
-    school: [], group: [], membership: [], invitation: [], homework: [],
-    homeworkSubmission: [], schoolChat: [], schoolMessage: [], notification: [],
+    notification: [],
     savedQuestion: [], questionMistake: [], questionStat: [], premiumPlan: [],
-    groupTeacher: [], appSetting: [],
+    appSetting: [],
   };
   let ids = {
     examAttempt: 1, examEvent: 1, attempt: 1, activityLog: 1,
-    school: 1, group: 1, membership: 1, invitation: 1, homework: 1,
-    homeworkSubmission: 1, schoolChat: 1, schoolMessage: 1, notification: 1,
+    notification: 1,
     savedQuestion: 1, questionMistake: 1, questionStat: 1, premiumPlan: 1,
-    groupTeacher: 1, appSetting: 1,
+    appSetting: 1,
   };
 
   // Har bir jadvalning unique kalitlari (schema.prisma dagi @@unique bilan mos)
   const UNIQUES = {
     savedQuestion: [["userId", "questionId"]],
     questionMistake: [["userId", "questionId"]],
-    schoolChat: [["studentMembershipId", "teacherMembershipId"]],
-    homeworkSubmission: [["homeworkId", "membershipId"]],
-    groupTeacher: [["groupId", "membershipId"]],
   };
 
   const DEFAULTS = {
     examAttempt: { focusLostCount: 0, status: 'IN_PROGRESS', answers: '{}', examVersion: 1 },
-    school: { status: 'PENDING' },
-    membership: { status: 'ACTIVE' },
-    invitation: { usedCount: 0 },
-    homework: { params: '{}' },
-    homeworkSubmission: { status: 'PENDING' },
-    schoolChat: { unreadForStudent: 0, unreadForTeacher: 0 },
-    schoolMessage: { isRead: false },
     notification: { isRead: false },
     savedQuestion: {},
     questionMistake: { wrongCount: 1, resolvedAt: null },
     questionStat: { totalCount: 0, wrongCount: 0 },
     premiumPlan: { badge: '', sortOrder: 0 },
-    groupTeacher: {},
   };
 
   function matchValue(actual, condition) {
@@ -131,8 +118,7 @@ export function createFakeDb() {
         return applySelect(row, select);
       },
       findUnique: async ({ where, select }) => {
-        // Prisma kompozit unique kalitni ichma-ich obyekt sifatida beradi:
-        //   { studentMembershipId_teacherMembershipId: { studentMembershipId, teacherMembershipId } }
+        // Prisma kompozit unique kalitni ichma-ich obyekt sifatida beradi.
         // Fake DB tekis solishtiradi, shuning uchun avval yoyamiz.
         let flat = where;
         const keys = Object.keys(where || {});
@@ -168,12 +154,6 @@ export function createFakeDb() {
         const rows = Array.isArray(data) ? data : [data];
         let created = 0;
         for (const item of rows) {
-          if (skipDuplicates && name === 'homeworkSubmission') {
-            const dup = db[name].some(
-              (r) => r.homeworkId === item.homeworkId && r.membershipId === item.membershipId
-            );
-            if (dup) continue;
-          }
           db[name].push({ id: ids[name]++, ...(DEFAULTS[name] || {}), ...item });
           created++;
         }
@@ -221,8 +201,7 @@ export function createFakeDb() {
         rows.forEach((row) => {
           for (const [k, v] of Object.entries(data)) {
             // increment/decrement — update() da qo'llab-quvvatlangan, lekin
-            // updateMany da yo'q edi. joinSchoolByCode atomik limit
-            // tekshiruvi shu operatordan foydalanadi.
+            // updateMany da yo'q edi.
             if (v && typeof v === 'object' && 'increment' in v) row[k] = (row[k] || 0) + v.increment;
             else if (v && typeof v === 'object' && 'decrement' in v) row[k] = (row[k] || 0) - v.decrement;
             else row[k] = v;

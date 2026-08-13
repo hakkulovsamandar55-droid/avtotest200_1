@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, Send, Image as ImageIcon, CheckCheck, Lock } from "lucide-react";
-import { ACCENT_FROM, ACCENT_TO } from "../theme";
 import { api, resolveUploadUrl } from "../api";
 
 function formatTime(iso) {
@@ -14,30 +13,21 @@ function MessageBubble({ message }) {
   return (
     <div className={`flex ${isAdmin ? "justify-start" : "justify-end"} mb-2.5`}>
       <div
-        className="max-w-[78%] rounded-2xl px-3.5 py-2.5 shadow-sm"
-        style={
-          isAdmin
-            ? { background: "var(--bg-card)", border: "1px solid var(--border-card)" }
-            : { background: `linear-gradient(135deg, ${ACCENT_FROM}, ${ACCENT_TO})` }
-        }
+        className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 ${
+          isAdmin ? "bg-surface border border-line" : "bg-accent"
+        }`}
       >
         {message.imageUrl && (
-          <img
-            src={resolveUploadUrl(message.imageUrl)}
-            alt=""
-            className="rounded-xl mb-1.5 max-w-full max-h-64 object-cover"
-          />
+          <img src={resolveUploadUrl(message.imageUrl)} alt="" className="rounded-xl mb-1.5 max-w-full max-h-64 object-cover" />
         )}
         {message.text && (
-          <p className={`text-sm leading-snug whitespace-pre-wrap ${isAdmin ? "text-text-main" : "text-white"}`}>
+          <p className={`text-sm leading-snug whitespace-pre-wrap ${isAdmin ? "text-main" : "text-accent-ink"}`}>
             {message.text}
           </p>
         )}
         <div className={`flex items-center gap-1 mt-1 ${isAdmin ? "justify-start" : "justify-end"}`}>
-          <span className={`text-[10px] ${isAdmin ? "text-text-muted" : "text-white/70"}`}>
-            {formatTime(message.createdAt)}
-          </span>
-          {!isAdmin && <CheckCheck size={12} color={message.isRead ? "#93C5FD" : "rgba(255,255,255,0.6)"} />}
+          <span className={`text-[10px] ${isAdmin ? "text-muted" : "text-accent-ink/70"}`}>{formatTime(message.createdAt)}</span>
+          {!isAdmin && <CheckCheck size={12} className={message.isRead ? "text-accent-ink" : "text-accent-ink/60"} />}
         </div>
       </div>
     </div>
@@ -118,53 +108,45 @@ export default function SupportChatScreen({ onBack }) {
       <div className="flex items-center gap-3 px-5 tp-safe-top pb-3">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-full bg-card border border-card-border shadow-sm flex items-center justify-center shrink-0"
+          className="w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center shrink-0"
         >
-          <ChevronLeft size={20} color="var(--icon-muted)" />
+          <ChevronLeft size={20} className="text-muted" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-extrabold text-text-main truncate">{t("support.title")}</h1>
-          <p className="text-text-muted text-xs">
-            {status === "CLOSED" ? t("support.closedSubtitle") : t("support.openSubtitle")}
-          </p>
+          <h1 className="text-lg font-extrabold text-main truncate">{t("support.title")}</h1>
+          <p className="text-muted text-xs">{status === "CLOSED" ? t("support.closedSubtitle") : t("support.openSubtitle")}</p>
         </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-2">
         {loading ? (
-          <p className="text-center text-text-muted text-sm mt-10">...</p>
+          <p className="text-center text-muted text-sm mt-10">...</p>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-16 px-6 text-center">
-            <p className="text-text-main font-semibold text-sm mb-1">{t("support.emptyTitle")}</p>
-            <p className="text-text-muted text-xs">{t("support.emptySubtitle")}</p>
+            <p className="text-main font-semibold text-sm mb-1">{t("support.emptyTitle")}</p>
+            <p className="text-muted text-xs">{t("support.emptySubtitle")}</p>
           </div>
         ) : (
           messages.map((m) => <MessageBubble key={m.id} message={m} />)
         )}
       </div>
 
-      {error && <p className="text-center text-red-500 text-xs px-5 mb-1">{error}</p>}
+      {error && <p className="text-center text-danger text-xs px-5 mb-1">{error}</p>}
 
       {status === "CLOSED" ? (
-        <div className="mx-4 mb-4 rounded-2xl bg-card-soft border border-card-border px-4 py-3 flex items-center gap-2">
-          <Lock size={15} color="var(--icon-muted)" />
-          <p className="text-text-muted text-xs flex-1">{t("support.closedNotice")}</p>
+        <div className="mx-4 mb-4 rounded-2xl bg-surface-2 border border-line px-4 py-3 flex items-center gap-2">
+          <Lock size={15} className="text-soft" />
+          <p className="text-muted text-xs flex-1">{t("support.closedNotice")}</p>
         </div>
       ) : (
         <div className="px-4 pb-4 pt-2 flex items-end gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImagePick}
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={sending}
-            className="w-11 h-11 rounded-full bg-card border border-card-border shadow-sm flex items-center justify-center shrink-0 active:scale-95 transition-transform disabled:opacity-50"
+            className="w-11 h-11 rounded-full bg-surface border border-line flex items-center justify-center shrink-0 active:scale-95 transition-transform disabled:opacity-50"
           >
-            <ImageIcon size={18} color="var(--icon-muted)" />
+            <ImageIcon size={18} className="text-soft" />
           </button>
           <textarea
             value={text}
@@ -177,15 +159,14 @@ export default function SupportChatScreen({ onBack }) {
             }}
             placeholder={t("support.placeholder")}
             rows={1}
-            className="flex-1 rounded-2xl bg-card border border-card-border shadow-sm px-4 py-3 text-sm text-text-main outline-none focus:border-gray-300 resize-none max-h-28"
+            className="flex-1 rounded-2xl px-4 py-3 text-sm resize-none max-h-28"
           />
           <button
             onClick={handleSend}
             disabled={sending || !text.trim()}
-            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition-transform disabled:opacity-50"
-            style={{ background: `linear-gradient(135deg, ${ACCENT_FROM}, ${ACCENT_TO})` }}
+            className="w-11 h-11 rounded-full bg-accent flex items-center justify-center shrink-0 active:scale-95 transition-transform disabled:opacity-50"
           >
-            <Send size={17} color="white" />
+            <Send size={17} className="text-accent-ink" />
           </button>
         </div>
       )}

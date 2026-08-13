@@ -38,11 +38,6 @@ export const FEATURES = [
     labelKey: "features.duel",
   },
   {
-    key: "cheat_sheet",
-    defaultAccess: ACCESS.FREE,
-    labelKey: "features.cheatSheet",
-  },
-  {
     key: "tricky_tests",
     defaultAccess: ACCESS.FREE,
     labelKey: "features.trickyTests",

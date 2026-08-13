@@ -58,8 +58,7 @@ export function ThemeProvider({ children }) {
     Object.entries(theme.vars).forEach(([key, value]) => {
       root.style.setProperty(key, value);
     });
-    root.style.setProperty("--accent-from", theme.accentFrom);
-    root.style.setProperty("--accent-to", theme.accentTo);
+    root.style.setProperty("--accent", theme.accent);
 
     root.setAttribute("data-theme", themeKey);
 

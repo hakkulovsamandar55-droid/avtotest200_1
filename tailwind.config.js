@@ -6,15 +6,21 @@ export default {
     extend: {
       colors: {
         app: "var(--bg-app)",
-        card: "var(--bg-card)",
-        "card-soft": "var(--bg-card-soft)",
-        "card-border": "var(--border-card)",
-        // Ochiluvchi oyna/modal uchun qattiq fon (shaffof shisha emas)
-        solid: "var(--bg-solid)",
-        "text-main": "var(--text-primary)",
-        "text-muted": "var(--text-secondary)",
-        "icon-muted": "var(--icon-muted)",
-        chevron: "var(--chevron)",
+        surface: "var(--bg-surface)",
+        "surface-2": "var(--bg-surface-raised)",
+        sunken: "var(--bg-sunken)",
+        modal: "var(--bg-modal)",
+        line: "var(--border)",
+        "line-strong": "var(--border-strong)",
+        main: "var(--text-primary)",
+        muted: "var(--text-secondary)",
+        soft: "var(--text-tertiary)",
+        accent: "var(--accent)",
+        "accent-ink": "var(--accent-text)",
+        "accent-soft": "var(--accent-soft)",
+        success: "var(--success)",
+        danger: "var(--danger)",
+        warning: "var(--warning)",
       },
       keyframes: {
         slideInRight: {

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Bookmark, BookmarkCheck, Loader2, Check, X } from "lucide-react";
+import { Bookmark, BookmarkCheck, Loader2, Check, X } from "lucide-react";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { api } from "../api";
+import { ScreenHeader, Card, EmptyState } from "../components/ui";
 
 /**
  * SAVOLLAR RO'YXATI — uch bo'lim uchun umumiy komponent:
@@ -101,16 +102,19 @@ export default function QuestionListScreen({ mode, onBack }) {
   // ro'yxatdan olib tashlaymiz (optimistik) — bosilgan zahoti yo'qoladi,
   // aks holda tarmoq sekin bo'lsa tugma "ishlamayotgandek" tuyulardi.
   // Xato bo'lsa qaytarib qo'yamiz.
-  const clearOne = useCallback(async (questionId) => {
-    const snapshot = items;
-    setItems((prev) => prev.filter((i) => i.questionId !== questionId));
-    try {
-      await api.clearMistake(questionId);
-    } catch (err) {
-      setItems(snapshot);
-      setError(err.message);
-    }
-  }, [items]);
+  const clearOne = useCallback(
+    async (questionId) => {
+      const snapshot = items;
+      setItems((prev) => prev.filter((i) => i.questionId !== questionId));
+      try {
+        await api.clearMistake(questionId);
+      } catch (err) {
+        setItems(snapshot);
+        setError(err.message);
+      }
+    },
+    [items]
+  );
 
   const clearAll = useCallback(async () => {
     setClearingAll(true);
@@ -126,43 +130,37 @@ export default function QuestionListScreen({ mode, onBack }) {
   }, []);
 
   const title =
-    mode === "saved"
-      ? t("home.savedQuestions")
-      : mode === "mistakes"
-        ? t("mistakes.myMistakes")
-        : t("mistakes.commonMistakes");
+    mode === "saved" ? t("home.savedQuestions") : mode === "mistakes" ? t("mistakes.myMistakes") : t("mistakes.commonMistakes");
 
   return (
     <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 animate-slide-in">
-      <div className="flex items-center gap-3 py-4">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-card-soft border border-card-border flex items-center justify-center shrink-0"
-        >
-          <ChevronLeft size={17} color="var(--icon-muted)" />
-        </button>
-        <h1 className="text-lg font-extrabold flex-1 min-w-0 truncate" style={{ color: "var(--text-primary)" }}>
-          {title}
-        </h1>
-        {mode === "mistakes" && items.length > 0 && !loading && (
-          <button
-            onClick={() => setConfirmClearAll(true)}
-            className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
-            style={{ background: "rgba(239,68,68,0.14)", color: "#F87171" }}
-          >
-            {t("mistakes.clearAll")}
-          </button>
-        )}
-      </div>
+      <ScreenHeader
+        title={title}
+        onBack={onBack}
+        right={
+          mode === "mistakes" &&
+          items.length > 0 &&
+          !loading && (
+            <button
+              onClick={() => setConfirmClearAll(true)}
+              className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold bg-danger/10 text-danger"
+            >
+              {t("mistakes.clearAll")}
+            </button>
+          )
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <Loader2 size={22} className="animate-spin" color="var(--icon-muted)" />
+          <Loader2 size={22} className="animate-spin text-soft" />
         </div>
       ) : error ? (
-        <p className="text-red-400 text-sm">{error}</p>
+        <p className="text-danger text-sm">{error}</p>
       ) : items.length === 0 ? (
-        <EmptyState mode={mode} t={t} />
+        <EmptyState
+          title={mode === "saved" ? t("home.noSavedYet") : mode === "mistakes" ? t("mistakes.noMistakesYet") : t("mistakes.noDataYet")}
+        />
       ) : (
         <div className="space-y-2.5">
           {items.map((item) => {
@@ -191,26 +189,22 @@ export default function QuestionListScreen({ mode, onBack }) {
           tasdiq so'raladi. */}
       {confirmClearAll && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-5 pb-8">
-          <div className="w-full max-w-sm rounded-3xl bg-card border border-card-border p-5">
-            <p className="font-bold text-base mb-2" style={{ color: "var(--text-primary)" }}>
-              {t("mistakes.clearAllTitle")}
-            </p>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--text-secondary)" }}>
+          <div className="w-full max-w-sm rounded-3xl bg-modal border border-line p-5">
+            <p className="font-bold text-base mb-2 text-main">{t("mistakes.clearAllTitle")}</p>
+            <p className="text-sm leading-relaxed mb-5 text-muted">
               {t("mistakes.clearAllBody", { count: items.length })}
             </p>
             <div className="space-y-2.5">
               <button
                 onClick={clearAll}
                 disabled={clearingAll}
-                className="w-full rounded-2xl py-3.5 font-bold text-white text-sm disabled:opacity-50"
-                style={{ background: "rgba(239,68,68,0.85)" }}
+                className="w-full rounded-2xl py-3.5 font-bold text-white text-sm disabled:opacity-50 bg-danger"
               >
                 {clearingAll ? t("mistakes.clearing") : t("mistakes.clearAllConfirm")}
               </button>
               <button
                 onClick={() => setConfirmClearAll(false)}
-                className="w-full rounded-2xl py-3 font-semibold text-sm border border-card-border"
-                style={{ color: "var(--text-secondary)" }}
+                className="w-full rounded-2xl py-3 font-semibold text-sm border border-line text-muted"
               >
                 {t("officialExam.back")}
               </button>
@@ -222,46 +216,25 @@ export default function QuestionListScreen({ mode, onBack }) {
   );
 }
 
-function EmptyState({ mode, t }) {
-  const text =
-    mode === "saved"
-      ? t("home.noSavedYet")
-      : mode === "mistakes"
-        ? t("mistakes.noMistakesYet")
-        : t("mistakes.noDataYet");
-  return (
-    <div className="text-center py-16 px-6">
-      <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-        {text}
-      </p>
-    </div>
-  );
-}
-
 function QuestionCard({ question, meta, mode, isSaved, busy, onToggleSave, onClear, t }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="rounded-2xl bg-card border border-card-border p-4">
+    <Card className="p-4">
       <div className="flex items-start gap-3">
-        <p
-          className="flex-1 text-[12.5px] leading-relaxed"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {question.text}
-        </p>
+        <p className="flex-1 text-[12.5px] leading-relaxed text-main">{question.text}</p>
         <button
           onClick={onToggleSave}
           disabled={busy}
-          className="shrink-0 w-8 h-8 rounded-full bg-card-soft flex items-center justify-center disabled:opacity-50"
+          className="shrink-0 w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center disabled:opacity-50"
           aria-label={isSaved ? t("question.unsave") : t("question.save")}
         >
           {busy ? (
-            <Loader2 size={14} className="animate-spin" color="var(--icon-muted)" />
+            <Loader2 size={14} className="animate-spin text-soft" />
           ) : isSaved ? (
-            <BookmarkCheck size={15} color="var(--accent-from)" />
+            <BookmarkCheck size={15} className="text-accent" />
           ) : (
-            <Bookmark size={15} color="var(--icon-muted)" />
+            <Bookmark size={15} className="text-soft" />
           )}
         </button>
         {/* Xatoni ro'yxatdan chiqarish — savolni o'qib, tushunib bo'lgach.
@@ -269,11 +242,10 @@ function QuestionCard({ question, meta, mode, isSaved, busy, onToggleSave, onCle
         {onClear && (
           <button
             onClick={onClear}
-            className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(239,68,68,0.12)" }}
+            className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-danger/10"
             aria-label={t("mistakes.clearOne")}
           >
-            <X size={15} color="#F87171" />
+            <X size={15} className="text-danger" />
           </button>
         )}
       </div>
@@ -281,20 +253,12 @@ function QuestionCard({ question, meta, mode, isSaved, busy, onToggleSave, onCle
       {/* Qo'shimcha ma'lumot — rejimga qarab */}
       <div className="flex items-center gap-3 mt-2.5">
         {mode === "mistakes" && meta.wrongCount > 0 && (
-          <span className="text-[10px]" style={{ color: "#F87171" }}>
-            {t("mistakes.wrongTimes", { count: meta.wrongCount })}
-          </span>
+          <span className="text-[10px] text-danger">{t("mistakes.wrongTimes", { count: meta.wrongCount })}</span>
         )}
         {mode === "hardest" && meta.wrongPct != null && (
-          <span className="text-[10px]" style={{ color: "#F87171" }}>
-            {t("mistakes.wrongPctLine", { pct: meta.wrongPct })}
-          </span>
+          <span className="text-[10px] text-danger">{t("mistakes.wrongPctLine", { pct: meta.wrongPct })}</span>
         )}
-        <button
-          onClick={() => setRevealed((v) => !v)}
-          className="text-[10px] font-semibold underline"
-          style={{ color: "var(--accent-from)" }}
-        >
+        <button onClick={() => setRevealed((v) => !v)} className="text-[10px] font-semibold underline text-accent">
           {revealed ? t("question.hideAnswer") : t("question.showAnswer")}
         </button>
       </div>
@@ -306,28 +270,15 @@ function QuestionCard({ question, meta, mode, isSaved, busy, onToggleSave, onCle
             return (
               <div
                 key={i}
-                className="flex items-start gap-2 rounded-xl px-3 py-2"
-                style={{
-                  background: ok ? "rgba(16,185,129,0.14)" : "var(--bg-card-soft)",
-                  border: ok ? "1px solid rgba(16,185,129,0.4)" : "1px solid transparent",
-                }}
+                className={`flex items-start gap-2 rounded-xl px-3 py-2 ${ok ? "bg-success/10 border border-success/30" : "bg-sunken border border-transparent"}`}
               >
-                {ok ? (
-                  <Check size={13} color="#34D399" className="shrink-0 mt-0.5" />
-                ) : (
-                  <X size={13} color="var(--chevron)" className="shrink-0 mt-0.5" />
-                )}
-                <span
-                  className="text-[11.5px] leading-snug"
-                  style={{ color: ok ? "var(--text-primary)" : "var(--text-secondary)" }}
-                >
-                  {opt}
-                </span>
+                {ok ? <Check size={13} className="shrink-0 mt-0.5 text-success" /> : <X size={13} className="shrink-0 mt-0.5 text-soft" />}
+                <span className={`text-[11.5px] leading-snug ${ok ? "text-main" : "text-muted"}`}>{opt}</span>
               </div>
             );
           })}
         </div>
       )}
-    </div>
+    </Card>
   );
 }

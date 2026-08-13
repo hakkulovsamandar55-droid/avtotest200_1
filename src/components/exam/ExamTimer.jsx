@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Timer } from "lucide-react";
+import { QUIZ } from "../../quizTheme";
 
 // Vaqtni MM:SS shaklida ko'rsatadi
 export function formatDuration(totalSeconds) {
@@ -24,10 +25,10 @@ function levelFor(seconds) {
 }
 
 const STYLES = {
-  normal: "bg-white/5 text-white/80",
-  info: "bg-sky-500/15 text-sky-300",
-  warning: "bg-amber-500/15 text-amber-300",
-  danger: "bg-red-500/20 text-red-300 animate-pulse",
+  normal: { background: QUIZ.card, color: QUIZ.text },
+  info: { background: "rgba(56,189,248,0.15)", color: "#7DD3FC" },
+  warning: { background: "rgba(251,191,36,0.15)", color: QUIZ.warning },
+  danger: { background: "rgba(248,113,113,0.18)", color: QUIZ.danger },
 };
 
 /**
@@ -80,7 +81,10 @@ export default function ExamTimer({ serverSecondsLeft, onExpire, onWarning }) {
 
   return (
     <div
-      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold tabular-nums shrink-0 ${STYLES[level]}`}
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold tabular-nums shrink-0 ${
+        level === "danger" ? "animate-pulse" : ""
+      }`}
+      style={STYLES[level]}
       role="timer"
       aria-live={level === "danger" ? "assertive" : "off"}
     >
