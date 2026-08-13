@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import BottomNav from "../components/BottomNav";
+import TabSwiper from "../components/TabSwiper";
 import HomeTab from "./HomeTab";
 import StatsTab from "./StatsTab";
 import SettingsTab from "./SettingsTab";
@@ -68,7 +69,7 @@ export default function MainApp({ user }) {
 
   if (showOfficialExam) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <OfficialExamContainer
           onExit={() => setShowOfficialExam(false)}
           onOpenPremium={() => {
@@ -82,7 +83,7 @@ export default function MainApp({ user }) {
 
   if (showExam) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <ExamScreen onExit={() => setShowExam(false)} />
       </div>
     );
@@ -91,7 +92,7 @@ export default function MainApp({ user }) {
   if (showPremium) {
     if (paymentPlan) {
       return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full animate-slide-in">
           <PaymentScreen
             plan={paymentPlan}
             onBack={() => setPaymentPlan(null)}
@@ -105,7 +106,7 @@ export default function MainApp({ user }) {
       );
     }
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <PremiumScreen onBack={() => setShowPremium(false)} onSelectPlan={setPaymentPlan} />
       </div>
     );
@@ -113,7 +114,7 @@ export default function MainApp({ user }) {
 
   if (showSupport) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <SupportChatScreen onBack={() => setShowSupport(false)} />
       </div>
     );
@@ -121,7 +122,7 @@ export default function MainApp({ user }) {
 
   if (showDuel) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <DuelScreen onExit={() => setShowDuel(false)} />
       </div>
     );
@@ -129,7 +130,7 @@ export default function MainApp({ user }) {
 
   if (activeTicket !== null) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <TestScreen
           ticketNumber={activeTicket}
           onExit={() => setActiveTicket(null)}
@@ -140,7 +141,7 @@ export default function MainApp({ user }) {
 
   if (showTickets) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <TicketsScreen
           onBack={() => setShowTickets(false)}
           onSelectTicket={(num) => setActiveTicket(num)}
@@ -153,7 +154,7 @@ export default function MainApp({ user }) {
   if (topicKey) {
     const questions = getQuestionsForTopic(getAllQuestions(i18n.language), topicKey);
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <TestScreen
           customQuestions={questions}
           customTitle={t(`topics.names.${topicKey}`)}
@@ -165,7 +166,7 @@ export default function MainApp({ user }) {
 
   if (showTopics) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <TopicTestsScreen
           onBack={() => setShowTopics(false)}
           onStartTopic={(key) => {
@@ -179,7 +180,7 @@ export default function MainApp({ user }) {
 
   if (questionList) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <QuestionListScreen
           mode={questionList}
           onBack={() => {
@@ -196,7 +197,7 @@ export default function MainApp({ user }) {
 
   if (showMistakes) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <MistakesHubScreen
           onBack={() => setShowMistakes(false)}
           onOpenCommon={() => {
@@ -215,7 +216,7 @@ export default function MainApp({ user }) {
   // CHALG'ITUVCHI TESTLAR — ko'pchilik xato qiladigan savollardan tuzilgan test.
   if (showTricky) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <TrickyTestScreen onBack={() => setShowTricky(false)} />
       </div>
     );
@@ -223,7 +224,7 @@ export default function MainApp({ user }) {
 
   if (showReferral) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <ReferralScreen onBack={() => setShowReferral(false)} />
       </div>
     );
@@ -231,7 +232,7 @@ export default function MainApp({ user }) {
 
   if (showSigns) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <SignsScreen onBack={() => setShowSigns(false)} />
       </div>
     );
@@ -239,7 +240,7 @@ export default function MainApp({ user }) {
 
   if (showAdmin) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <AdminPanelScreen
           onBack={() => setShowAdmin(false)}
           currentUserId={user?.id}
@@ -253,7 +254,7 @@ export default function MainApp({ user }) {
   // statistika va foydalanuvchilar ro'yxati (asosiy ma'lumot).
   if (showModerator) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full animate-slide-in">
         <ModeratorPanelScreen onBack={() => setShowModerator(false)} />
       </div>
     );
@@ -261,7 +262,10 @@ export default function MainApp({ user }) {
 
   return (
     <div className="flex flex-col h-full bg-app">
-      {active === "home" && (
+      {/* Uchala bo'lim doim yonma-yon o'rnatilgan holda turadi — barmoq
+          bilan chapga/o'ngga surilganda TabSwiper ularni translateX bilan
+          silliq (lekin "qotib qolmaydigan") animatsiya bilan almashtiradi. */}
+      <TabSwiper tabs={TAB_ORDER} active={active} onChange={setActive}>
         <HomeTab
           user={user}
           onOpenTickets={() => setShowTickets(true)}
@@ -276,9 +280,7 @@ export default function MainApp({ user }) {
           onOpenTricky={() => setShowTricky(true)}
           onOpenPremium={() => setShowPremium(true)}
         />
-      )}
-      {active === "stats" && <StatsTab />}
-      {active === "settings" && (
+        <StatsTab />
         <SettingsTab
           user={user}
           onOpenAdmin={() => setShowAdmin(true)}
@@ -286,8 +288,10 @@ export default function MainApp({ user }) {
           onOpenSupport={() => setShowSupport(true)}
           onOpenReferral={() => setShowReferral(true)}
         />
-      )}
+      </TabSwiper>
       <BottomNav active={active} setActive={setActive} />
     </div>
   );
 }
+
+const TAB_ORDER = ["home", "stats", "settings"];

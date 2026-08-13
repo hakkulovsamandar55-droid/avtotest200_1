@@ -6,11 +6,15 @@
 // qaror, ilova ko'rinishi izchilroq bo'ladi.
 // ============================================================================
 
+// Aksent rang — logotipdagi yo'l-rul belgisining ko'k rangidan olingan
+// (taxminan #0C5EED, logotip gradientining o'rtacha toni). Tungi temada
+// qora fonda yaxshiroq ajralib turishi uchun biroz yorqinroq soya
+// ishlatiladi.
 export const THEMES = {
   night: {
     label: "Tungi",
     isDark: true,
-    accent: "#2DD4BF",
+    accent: "#3B82F6",
     vars: {
       "--bg-app": "#0B0F14",
       "--bg-surface": "#141A21",
@@ -24,9 +28,9 @@ export const THEMES = {
       "--text-secondary": "#94A3B3",
       "--text-tertiary": "#5C6B7A",
 
-      "--accent": "#2DD4BF",
-      "--accent-text": "#052420",
-      "--accent-soft": "rgba(45,212,191,0.14)",
+      "--accent": "#3B82F6",
+      "--accent-text": "#FFFFFF",
+      "--accent-soft": "rgba(59,130,246,0.16)",
 
       "--success": "#34D399",
       "--danger": "#F87171",
@@ -39,7 +43,7 @@ export const THEMES = {
   day: {
     label: "Kunduzgi",
     isDark: false,
-    accent: "#0D9488",
+    accent: "#155DFC",
     vars: {
       "--bg-app": "#F6F7F9",
       "--bg-surface": "#FFFFFF",
@@ -53,9 +57,9 @@ export const THEMES = {
       "--text-secondary": "#5B6472",
       "--text-tertiary": "#98A2B3",
 
-      "--accent": "#0D9488",
+      "--accent": "#155DFC",
       "--accent-text": "#FFFFFF",
-      "--accent-soft": "rgba(13,148,136,0.10)",
+      "--accent-soft": "rgba(21,93,252,0.10)",
 
       "--success": "#0D9488",
       "--danger": "#DC2626",
