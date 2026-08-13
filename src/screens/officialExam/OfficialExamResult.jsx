@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, XCircle, Clock, Target, Percent, Eye, RotateCcw, Home, EyeOff } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Target, Percent, Eye, RotateCcw, Home, EyeOff } from "../../icons";
 import { formatDuration } from "../../components/exam/ExamTimer";
 import { QuizShell, QuizButton, ResultRing } from "../../components/exam/QuizUI";
 import { QUIZ } from "../../quizTheme";

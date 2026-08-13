@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Timer } from "lucide-react";
+import { Timer } from "../../icons";
 import { QUIZ } from "../../quizTheme";
 
 // Vaqtni MM:SS shaklida ko'rsatadi

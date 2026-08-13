@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Check, X, RotateCcw, Trophy } from "lucide-react";
+import { ChevronLeft, Check, X, RotateCcw, Trophy } from "../icons";
 import { generateSignsQuiz } from "../../shared/data/signsQuiz";
 import SignIcon from "../components/SignIcon";
 import { api } from "../api";

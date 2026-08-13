@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Loader2, Shuffle, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Loader2, Shuffle, AlertTriangle } from "../icons";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { api } from "../api";
 import TestScreen from "./TestScreen";

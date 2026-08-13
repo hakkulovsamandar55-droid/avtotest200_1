@@ -1,5 +1,5 @@
 import React from "react";
-import { Info, MinusCircle } from "lucide-react";
+import { Info, MinusCircle } from "../../icons";
 import QuestionImage from "../QuestionImage";
 import { OptionButton } from "./QuizUI";
 import { QUIZ } from "../../quizTheme";

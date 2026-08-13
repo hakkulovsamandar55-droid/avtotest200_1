@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Swords, Trophy, Frown, Handshake, Users, Shuffle, Send, Copy, Check } from "lucide-react";
+import { Swords, Trophy, Frown, Handshake, Users, Shuffle, Send, Copy, Check } from "../icons";
 import { getDuelSocket, disconnectDuelSocket } from "../duelSocket";
 import QuestionImage from "../components/QuestionImage";
 import { QuizShell, QuizHeader, QuizProgress, OptionButton, QuizButton } from "../components/exam/QuizUI";

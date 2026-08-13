@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "../../icons";
 
 /**
  * Sozlamalar/admin ro'yxatlarida ishlatiladigan qator: ikonka + matn + o'ng

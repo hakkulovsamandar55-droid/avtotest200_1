@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TrendingUp, TrendingDown, Clock, Users, Percent } from "lucide-react";
+import { TrendingUp, TrendingDown, Clock, Users, Percent } from "../../icons";
 import { api } from "../../api";
 import { formatDuration } from "../../components/exam/ExamTimer";
 import { Card } from "../../components/ui";

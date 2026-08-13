@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Copy, Check, Users, Gift, Loader2, Crown } from "lucide-react";
+import { Copy, Check, Users, Gift, Loader2, Crown } from "../icons";
 import { api } from "../api";
 import { ScreenHeader, Card, Button } from "../components/ui";
 

@@ -12,7 +12,7 @@ import {
   PartyPopper,
   ChevronLeft,
   X,
-} from "lucide-react";
+} from "../icons";
 
 const STORAGE_KEY = "pravaol-onboarding-seen";
 

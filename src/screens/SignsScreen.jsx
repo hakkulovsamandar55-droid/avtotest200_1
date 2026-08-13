@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Search, X, GraduationCap } from "lucide-react";
+import { ChevronRight, Search, X, GraduationCap } from "../icons";
 import { CATEGORIES, CATEGORY_META, getSignsByCategory, searchSigns, TOTAL_SIGNS } from "../data/signsData";
 import SignIcon from "../components/SignIcon";
 import { getSignDescription } from "../../shared/data/signDescriptions";

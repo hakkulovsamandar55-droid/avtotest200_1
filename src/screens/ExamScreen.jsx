@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, X, RotateCcw, Timer, AlertTriangle } from "lucide-react";
+import { Check, X, RotateCcw, Timer, AlertTriangle } from "../icons";
 import { getRandomExamQuestions, EXAM_TIME_SECONDS, EXAM_MAX_MISTAKES } from "../data/ticketsData";
 import { api } from "../api";
 import SignIcon from "../components/SignIcon";

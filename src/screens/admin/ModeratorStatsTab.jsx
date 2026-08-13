@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Users, Crown, UserPlus, CalendarDays, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Users, Crown, UserPlus, CalendarDays, Clock, CheckCircle2, XCircle } from "../../icons";
 import { api } from "../../api";
 import { Card } from "../../components/ui";
 

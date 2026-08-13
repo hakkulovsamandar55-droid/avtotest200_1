@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { HelpCircle, Send, ChevronRight, ShieldCheck, Check, Trophy, Gift, Globe } from "lucide-react";
+import { HelpCircle, Send, ChevronRight, ShieldCheck, Check, Trophy, Gift, Globe } from "../icons";
 import { useTheme } from "../ThemeContext";
 import { useFontSize } from "../FontSizeContext";
 import { api } from "../api";

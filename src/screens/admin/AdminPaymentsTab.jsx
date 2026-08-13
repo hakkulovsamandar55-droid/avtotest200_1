@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, XCircle, AlertTriangle, ChevronDown, ChevronUp, CreditCard, Check, Pencil } from "lucide-react";
+import { CheckCircle2, XCircle, AlertTriangle, ChevronDown, ChevronUp, CreditCard, Check, Pencil } from "../../icons";
 import { api, resolveUploadUrl } from "../../api";
 import { Card, Button } from "../../components/ui";
 

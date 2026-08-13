@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, X, Crown } from "lucide-react";
+import { Search, X, Crown } from "../../icons";
 import { api } from "../../api";
 import { Card } from "../../components/ui";
 

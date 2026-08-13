@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { X } from "../icons";
 import PremiumScreen from "./PremiumScreen";
 
 // Ilova ochilganda avtomatik ko'rsatiladigan premium popup.

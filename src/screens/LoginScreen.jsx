@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Clock, Cake } from "lucide-react";
+import { User, Clock, Cake } from "../icons";
 import GradientIcon from "../components/GradientIcon";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import { Button } from "../components/ui";

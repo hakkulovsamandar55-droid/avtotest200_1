@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "../../icons";
 import { QUIZ } from "../../quizTheme";
 
 /** Test/imtihon ekranlarining umumiy o'rami — har doim quyuq. */

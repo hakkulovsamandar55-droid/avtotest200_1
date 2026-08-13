@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Trophy, Clock, Percent, Target, EyeOff } from "lucide-react";
+import { Trophy, Clock, Percent, Target, EyeOff } from "../../icons";
 import { api } from "../../api";
 import { formatDuration } from "../../components/exam/ExamTimer";
 import { QuizShell, QuizHeader } from "../../components/exam/QuizUI";

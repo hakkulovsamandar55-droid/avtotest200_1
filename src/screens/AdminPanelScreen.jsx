@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, X, ShieldCheck, Crown, Loader2 } from "lucide-react";
+import { Search, X, ShieldCheck, Crown, Loader2 } from "../icons";
 import { api } from "../api";
 import { formatPrice } from "../../shared/data/premiumPlans";
 import UserProfileScreen from "./admin/UserProfileScreen";

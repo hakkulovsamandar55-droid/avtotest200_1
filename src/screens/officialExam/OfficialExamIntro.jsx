@@ -9,7 +9,7 @@ import {
   Crown,
   History,
   Trophy,
-} from "lucide-react";
+} from "../../icons";
 import { api } from "../../api";
 import { QuizShell, QuizHeader, QuizButton } from "../../components/exam/QuizUI";
 import { QUIZ } from "../../quizTheme";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "../../icons";
 
 // Guruhlangan filtr ro'yxati — spec 2-bo'lim. Har bir filtr kaliti backend
 // (admin.js buildFilterConditions) bilan bir xil bo'lishi shart.

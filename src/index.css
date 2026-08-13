@@ -20,13 +20,6 @@ h1, h2, h3, .font-bold, .font-extrabold, .font-semibold {
     "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Ikonkalar (lucide-react) — standart chiziq birmuncha yupqa edi, "sal
-   qalinroq" ko'rinish uchun global qalinlik oshirildi. Bu SVG'ning inline
-   stroke-width atributidan CSS orqali ustun keladi (odatiy CSS qoidasi). */
-.lucide {
-  stroke-width: 2.25;
-}
-
 /* Barcha bosiladigan elementlarda mobil brauzer "tap highlight" ni olib tashlash
    va harakatlarni silliqroq qilish */
 * {

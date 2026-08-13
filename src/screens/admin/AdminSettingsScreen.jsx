@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Check, Loader2, Link2, Bot, Crown, Gift } from "lucide-react";
+import { Sparkles, Check, Loader2, Link2, Bot, Crown, Gift } from "../../icons";
 import { api } from "../../api";
 import { useSettings } from "../../SettingsContext";
 import { ScreenHeader, Card } from "../../components/ui";

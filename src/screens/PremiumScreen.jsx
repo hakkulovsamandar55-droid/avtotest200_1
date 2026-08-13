@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Sparkles, Clock } from "lucide-react";
+import { Check, Sparkles, Clock } from "../icons";
 import { PREMIUM_PLANS, formatPrice } from "../../shared/data/premiumPlans";
 import { api } from "../api";
 import { QuizShell, QuizHeader, QuizButton } from "../components/exam/QuizUI";

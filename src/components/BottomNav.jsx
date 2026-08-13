@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Home, BarChart3, Settings } from "lucide-react";
+import { Home, BarChart3, Settings } from "../icons";
 
 // Pastki navigatsiya — suzuvchi kapsula, faqat ikonkalar. Faol bo'lim
 // aksent rangli dumaloq fon bilan ajratiladi (matn yorlig'i yo'q — bu

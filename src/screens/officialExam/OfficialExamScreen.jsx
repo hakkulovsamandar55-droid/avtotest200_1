@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight, AlertTriangle, Send } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertTriangle, Send } from "../../icons";
 import { api } from "../../api";
 import QuestionCard from "../../components/exam/QuestionCard";
 import QuestionNavigator from "../../components/exam/QuestionNavigator";

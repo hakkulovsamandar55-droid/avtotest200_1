@@ -16,7 +16,7 @@ import {
   BookOpen,
   Signpost,
   Minus,
-} from "lucide-react";
+} from "../icons";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { getTopicSummary } from "../../shared/data/questionTopics";
 import { ScreenHeader, ListRow, Group } from "../components/ui";

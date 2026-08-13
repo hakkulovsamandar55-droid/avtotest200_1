@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, ChevronLeft, Send, Image as ImageIcon, Lock, Unlock, UserCircle2 } from "lucide-react";
+import { Search, ChevronLeft, Send, Image as ImageIcon, Lock, Unlock, UserCircle2 } from "../../icons";
 import { api, resolveUploadUrl } from "../../api";
 import { Card } from "../../components/ui";
 

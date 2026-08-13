@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Send } from "lucide-react";
+import { Send } from "../../icons";
 import { api } from "../../api";
 import { Button } from "../../components/ui";
 

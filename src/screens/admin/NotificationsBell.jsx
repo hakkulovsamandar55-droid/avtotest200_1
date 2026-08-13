@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell } from "lucide-react";
+import { Bell } from "../../icons";
 import { api } from "../../api";
 
 const TYPE_ICONS = {

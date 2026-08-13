@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Send, Image as ImageIcon, CheckCheck, Lock } from "lucide-react";
+import { ChevronLeft, Send, Image as ImageIcon, CheckCheck, Lock } from "../icons";
 import { api, resolveUploadUrl } from "../api";
 
 function formatTime(iso) {

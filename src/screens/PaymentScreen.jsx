@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Copy, Check, Upload, Clock, XCircle, MessageCircle } from "lucide-react";
+import { Copy, Check, Upload, Clock, XCircle, MessageCircle } from "../icons";
 import { api } from "../api";
 import { formatPrice } from "../data/premiumData";
 import { ScreenHeader, Card, Button } from "../components/ui";

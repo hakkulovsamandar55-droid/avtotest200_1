@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "../../icons";
 
 /**
  * Har bir ichki ekranning yuqori qismi: orqaga tugmasi + sarlavha (+ ixtiyoriy

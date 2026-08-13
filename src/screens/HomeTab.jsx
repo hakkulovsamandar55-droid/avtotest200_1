@@ -16,7 +16,7 @@ import {
   Lock,
   ChevronRight,
   Crown,
-} from "lucide-react";
+} from "../icons";
 import { api } from "../api";
 import { useSettings } from "../SettingsContext";
 import { Ring, Group, Chip, Button } from "../components/ui";

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bookmark, BookmarkCheck, Loader2, Check, X } from "lucide-react";
+import { Bookmark, BookmarkCheck, Loader2, Check, X } from "../icons";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { api } from "../api";
 import { ScreenHeader, Card, EmptyState } from "../components/ui";

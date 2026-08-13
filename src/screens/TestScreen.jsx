@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, X, RotateCcw, Bookmark, BookmarkCheck } from "lucide-react";
+import { Check, X, RotateCcw, Bookmark, BookmarkCheck } from "../icons";
 import { getTicketQuestions } from "../../shared/data/ticketsData";
 import { api } from "../api";
 import SignIcon from "../components/SignIcon";

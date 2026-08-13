@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, X, MinusCircle } from "lucide-react";
+import { Check, X, MinusCircle } from "../../icons";
 import { api } from "../../api";
 import QuestionCard from "../../components/exam/QuestionCard";
 import { QuizShell, QuizHeader } from "../../components/exam/QuizUI";

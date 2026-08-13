@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Zap, ListChecks, Trophy, Flame, Clock } from "lucide-react";
+import { Zap, ListChecks, Trophy, Flame, Clock } from "../icons";
 import { api } from "../api";
 import { Ring, Group, Chip } from "../components/ui";
 

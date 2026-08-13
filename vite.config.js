@@ -44,7 +44,7 @@ export default defineConfig({
           }
 
           // Ikonkalar to'plami
-          if (id.includes("lucide-react")) {
+          if (id.includes("@phosphor-icons/react")) {
             return "icons";
           }
 

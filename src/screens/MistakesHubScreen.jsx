@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Users, User } from "lucide-react";
+import { Users, User } from "../icons";
 import { ScreenHeader, Group, ListRow } from "../components/ui";
 
 /**

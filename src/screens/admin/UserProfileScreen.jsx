@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   ShieldCheck, ShieldOff, Crown, XCircle, Ban, CheckCircle2,
   MessageCircle, Trash2, Percent, Clock, CreditCard, Check,
-} from "lucide-react";
+} from "../../icons";
 import { api } from "../../api";
 import DiscountModal from "./DiscountModal";
 import { ScreenHeader, Card, Button } from "../../components/ui";

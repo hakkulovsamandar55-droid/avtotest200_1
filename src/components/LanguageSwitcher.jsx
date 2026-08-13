@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Globe, Check } from "lucide-react";
+import { Globe, Check } from "../icons";
 import { LANGUAGES } from "../i18n";
 import { ListRow } from "./ui";
 
