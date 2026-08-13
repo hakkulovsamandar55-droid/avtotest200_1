@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 // Tailwind barcha text-* klasslari rem asosida ishlagani uchun, bitta joyda
 // o'zgartirish butun ilova bo'ylab proporsional ta'sir qiladi.
 const FontSizeContext = createContext(null);
-const STORAGE_KEY = "tezprava-font-size";
+const STORAGE_KEY = "pravaol-font-size";
 
 export const FONT_SIZES = {
   small: { key: "small", rootPx: 14 },

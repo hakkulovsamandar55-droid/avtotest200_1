@@ -1,4 +1,4 @@
-# TezPrava Bot (Python, aiogram 3.x)
+# PravaOl Bot (Python, aiogram 3.x)
 
 Hozircha **mustaqil** bot — sayt (Node backend/baza) bilan hech qanday
 aloqasi yo'q. Faqat `/start` bosilganda foydalanuvchini Mini App'ga

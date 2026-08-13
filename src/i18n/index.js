@@ -13,7 +13,7 @@ export const LANGUAGES = [
 ];
 
 const VALID_CODES = LANGUAGES.map((l) => l.code);
-export const LANGUAGE_STORAGE_KEY = "tezprava-language";
+export const LANGUAGE_STORAGE_KEY = "pravaol-language";
 
 // MUHIM TUZATISH: ilgari `lng` doim "uz_latn" ga qattiq yozilgan edi —
 // foydalanuvchi rus (yoki kirill) tanlasa ham, ilovani qayta ochganda

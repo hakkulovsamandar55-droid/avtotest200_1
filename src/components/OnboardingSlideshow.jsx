@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-const STORAGE_KEY = "tezprava-onboarding-seen";
+const STORAGE_KEY = "pravaol-onboarding-seen";
 
 /** localStorage o'qib bo'lmasa ham ilova ishlashda davom etishi kerak —
  * shu holatda onboarding har safar qayta ko'rsatilmasligi uchun "ko'rilgan"

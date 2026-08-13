@@ -3,7 +3,7 @@
 // .env faylga VITE_API_URL=https://sizning-serveringiz.com qo'ying.
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-const TOKEN_KEY = "tezprava_token";
+const TOKEN_KEY = "pravaol_token";
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);

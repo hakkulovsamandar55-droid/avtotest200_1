@@ -1,4 +1,4 @@
-# TezPrava
+# PravaOl
 
 Telegram Mini App uslubidagi PDD/YHQ imtihoniga tayyorgarlik ilovasi.
 Frontend (React + Vite) va real backend (Node.js + Express + PostgreSQL, `backend/` papkada).

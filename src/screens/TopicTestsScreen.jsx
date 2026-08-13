@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { getAllQuestions } from "../../shared/data/ticketsData";
 import { getTopicSummary } from "../../shared/data/questionTopics";
-import { ScreenHeader, ListRow } from "../components/ui";
+import { ScreenHeader, ListRow, Group } from "../components/ui";
 
 // Mavzu kaliti -> ikonka. questionTopics.js da faqat ikonka NOMI saqlanadi
 // (u shared/ da va lucide-react ga bog'liq bo'lmasligi kerak — backend ham
@@ -57,21 +57,20 @@ export default function TopicTestsScreen({ onBack, onStartTopic }) {
     <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 animate-slide-in">
       <ScreenHeader title={t("home.topicTests")} subtitle={t("topics.subtitle", { count: topics.length })} onBack={onBack} />
 
-      <div className="space-y-2.5">
+      <Group>
         {topics.map((topic) => {
           const Icon = ICONS[topic.icon] || BookOpen;
           return (
-            <div key={topic.key} className="rounded-2xl bg-surface border border-line">
-              <ListRow
-                icon={Icon}
-                label={t(`topics.names.${topic.key}`)}
-                sublabel={t("topics.questionCount", { count: topic.count })}
-                onClick={() => onStartTopic(topic.key)}
-              />
-            </div>
+            <ListRow
+              key={topic.key}
+              icon={Icon}
+              label={t(`topics.names.${topic.key}`)}
+              sublabel={t("topics.questionCount", { count: topic.count })}
+              onClick={() => onStartTopic(topic.key)}
+            />
           );
         })}
-      </div>
+      </Group>
     </div>
   );
 }

@@ -2,23 +2,25 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { THEMES, THEME_ORDER, DEFAULT_THEME } from "./themes";
 
 const ThemeContext = createContext(null);
-const STORAGE_KEY = "tezprava-theme";
+const STORAGE_KEY = "pravaol-theme";
 
 // Olib tashlangan temalarning o'rnini bosuvchi xarita.
 //
-// NIMA UCHUN KERAK: barcha eski temalar (light/dark/aurora/amber/crimson va
-// undan oldingi pink) yangi "frosted glass" uslubidagi temalar bilan
-// almashtirildi. Foydalanuvchilarda localStorage'da hali eski kalit turibdi.
-// Migratsiyasiz ular jimgina standart temaga tushib qolardi — bu "mening
-// temam yo'qoldi" bo'lib ko'rinadi. Eng yaqin yangi temaga o'tkazamiz:
-// yorug'lar -> day, quyuqlar -> night, rangdorlar -> mos rang varianti.
+// NIMA UCHUN KERAK: eski qo'shimcha rang temalari (Siyoh/Cho'l/O'rmon) va
+// undan oldingi variantlar olib tashlandi — endi faqat Kunduzgi/Tungi bor.
+// Foydalanuvchilarda localStorage'da hali eski kalit turgan bo'lishi mumkin;
+// migratsiyasiz ular jimgina standart temaga tushib qolardi. Yorug'
+// variantlar -> day, quyuq variantlar -> night.
 const THEME_MIGRATIONS = {
   light: "day",
   aurora: "day",
+  dune: "day",
   dark: "night",
-  pink: "ink",
-  crimson: "ink",
-  amber: "dune",
+  pink: "night",
+  crimson: "night",
+  amber: "night",
+  ink: "night",
+  forest: "night",
 };
 
 function getInitialTheme() {

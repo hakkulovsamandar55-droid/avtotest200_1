@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Users, User } from "lucide-react";
-import { ScreenHeader, Card, ListRow } from "../components/ui";
+import { ScreenHeader, Group, ListRow } from "../components/ui";
 
 /**
  * XATOLAR BILAN ISHLASH — ikki bo'limga ajratuvchi ekran.
@@ -39,13 +39,11 @@ export default function MistakesHubScreen({ onBack, onOpenCommon, onOpenMine }) 
     <div className="flex-1 overflow-y-auto px-5 tp-safe-top pb-8 animate-slide-in">
       <ScreenHeader title={t("home.mistakes")} onBack={onBack} />
 
-      <div className="space-y-3">
+      <Group>
         {options.map(({ key, icon, title, desc, onClick }) => (
-          <Card key={key}>
-            <ListRow icon={icon} label={title} sublabel={desc} onClick={onClick} />
-          </Card>
+          <ListRow key={key} icon={icon} label={title} sublabel={desc} onClick={onClick} />
         ))}
-      </div>
+      </Group>
     </div>
   );
 }

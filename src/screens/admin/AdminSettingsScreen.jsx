@@ -167,7 +167,7 @@ export default function AdminSettingsScreen({ onBack }) {
           onBlur={() => {
             if ((data?.botUsername || "") !== botUsername) save({ botUsername });
           }}
-          placeholder="pravatezbot"
+          placeholder="pravaolbot"
           autoCapitalize="none"
           className="w-full rounded-2xl bg-surface border border-line pl-10 pr-4 py-3 text-sm"
         />

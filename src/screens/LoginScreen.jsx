@@ -9,7 +9,7 @@ import { api, setToken } from "../api";
 // Foydalanuvchi bir marta to'ldirgan ro'yxatdan o'tish anketasi shu yerda
 // saqlanadi — keyingi safar ilova ochilganda forma qayta so'ralmaydi,
 // Telegram orqali kirish esa har safar orqa fonda, ko'rinmas holda ketadi.
-const PROFILE_KEY = "tezprava_profile";
+const PROFILE_KEY = "pravaol_profile";
 
 function getSavedProfile() {
   try {
@@ -234,7 +234,7 @@ export default function LoginScreen({ onLogin, externalNotice }) {
       </div>
 
       <div className="pb-8 mt-auto text-center text-soft text-xs">
-        @{import.meta.env.VITE_BOT_USERNAME || "pravatezbot"}
+        @{import.meta.env.VITE_BOT_USERNAME || "pravaolbot"}
       </div>
     </div>
   );

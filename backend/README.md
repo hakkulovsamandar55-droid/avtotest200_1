@@ -1,4 +1,4 @@
-# TezPrava Backend
+# PravaOl Backend
 
 Node.js + Express + PostgreSQL (Prisma ORM). Telegram Mini App orqali
 autentifikatsiya qiladi va admin panel uchun foydalanuvchi qidiruvini beradi.

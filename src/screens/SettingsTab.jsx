@@ -1,31 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { HelpCircle, Send, ChevronRight, ShieldCheck, Crown, Check, Trophy, Gift, Globe } from "lucide-react";
+import { HelpCircle, Send, ChevronRight, ShieldCheck, Check, Trophy, Gift, Globe } from "lucide-react";
 import { useTheme } from "../ThemeContext";
 import { useFontSize } from "../FontSizeContext";
 import { api } from "../api";
-import { useSettings, useFeature } from "../SettingsContext";
+import { useSettings } from "../SettingsContext";
 import { LANGUAGES } from "../i18n";
 import { Group } from "../components/ui";
-
-function PremiumBanner({ onClick }) {
-  const { t } = useTranslation();
-  return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left bg-warning text-accent-ink active:scale-[0.99] transition-transform"
-    >
-      <div className="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center shrink-0">
-        <Crown size={18} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-extrabold text-sm">{t("settings.premium")}</p>
-        <p className="text-xs opacity-80">{t("settings.premiumSubtitle")}</p>
-      </div>
-      <ChevronRight size={18} />
-    </button>
-  );
-}
 
 /** Guruh ichidagi ochilib-yopiladigan qator: sarlavha qatori + (ochiq
  * bo'lsa) alohida bo'lim. Group'ning divide-y xossasi ular orasiga
@@ -81,37 +62,25 @@ function LanguageRow() {
   );
 }
 
-function ThemeRow({ isPremium, onOpenPremium }) {
+function ThemeRow() {
   const { t } = useTranslation();
   const { themeKey, setThemeKey, themeList } = useTheme();
   const [open, setOpen] = useState(false);
-
-  const MODE_KEYS = ["day", "night"];
-  const modePills = themeList.filter((it) => MODE_KEYS.includes(it.key));
-  const colorOptions = themeList.filter((it) => !MODE_KEYS.includes(it.key));
   const activeItem = themeList.find((it) => it.key === themeKey);
-
-  function choose(key, locked) {
-    if (locked) {
-      onOpenPremium?.();
-      return;
-    }
-    setThemeKey(key);
-  }
 
   return (
     <ExpandableRow
       label={t("settings.theme")}
-      value={<span className="w-4 h-4 rounded-full" style={{ backgroundColor: activeItem?.accent }} />}
+      value={<span className="text-muted text-sm">{activeItem?.label}</span>}
       open={open}
       onToggle={() => setOpen((v) => !v)}
     >
       <div className="flex gap-2.5">
-        {modePills.map((item) => (
+        {themeList.map((item) => (
           <button
             key={item.key}
-            onClick={() => choose(item.key, false)}
-            className={`flex-1 h-10 rounded-xl font-bold text-xs flex items-center justify-center border-2 transition-transform active:scale-[0.98] ${
+            onClick={() => setThemeKey(item.key)}
+            className={`flex-1 h-11 rounded-xl font-bold text-sm flex items-center justify-center border-2 transition-transform active:scale-[0.98] ${
               item.key === themeKey ? "border-accent" : "border-line"
             }`}
             style={{ background: item.vars["--bg-app"], color: item.vars["--text-primary"] }}
@@ -119,25 +88,6 @@ function ThemeRow({ isPremium, onOpenPremium }) {
             {item.label}
           </button>
         ))}
-      </div>
-
-      <div className="mt-2 space-y-0.5">
-        {colorOptions.map((item) => {
-          const active = item.key === themeKey;
-          const locked = !isPremium;
-          return (
-            <button
-              key={item.key}
-              onClick={() => choose(item.key, locked)}
-              className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 active:bg-surface-2"
-            >
-              <span className="w-5 h-5 rounded-full shrink-0" style={{ backgroundColor: item.accent }} />
-              <span className="flex-1 text-left text-xs font-medium text-main">{item.label}</span>
-              {locked && <Crown size={13} className="text-warning" />}
-              {active && <Check size={14} className="text-accent" strokeWidth={3} />}
-            </button>
-          );
-        })}
       </div>
     </ExpandableRow>
   );
@@ -239,13 +189,11 @@ function Row({ icon: Icon, label, onClick }) {
 
 // 2c-EKRAN: "Sozlamalar" — endi har bir qator o'z alohida kartasida
 // emas, mavzu bo'yicha guruhlangan yaxlit ro'yxatlarda joylashadi.
-export default function SettingsTab({ user, onOpenAdmin, onOpenModerator, onOpenPremium, onOpenSupport, onOpenReferral }) {
+export default function SettingsTab({ user, onOpenAdmin, onOpenModerator, onOpenSupport, onOpenReferral }) {
   const { t } = useTranslation();
   const isAdmin = user?.role === "ADMIN";
   const isModerator = user?.role === "MODERATOR";
   const { supportLink } = useSettings();
-  const themesUnlocked = useFeature("premium_themes", user);
-  const isPremium = themesUnlocked || isAdmin;
 
   return (
     <div className="flex-1 overflow-y-auto tp-safe-top pb-4 animate-fade-in">
@@ -261,13 +209,9 @@ export default function SettingsTab({ user, onOpenAdmin, onOpenModerator, onOpen
       </div>
 
       <div className="px-5 mt-5">
-        <PremiumBanner onClick={onOpenPremium} />
-      </div>
-
-      <div className="px-5 mt-3">
         <Group>
           <LanguageRow />
-          <ThemeRow isPremium={isPremium} onOpenPremium={onOpenPremium} />
+          <ThemeRow />
           <FontSizeRow />
         </Group>
       </div>

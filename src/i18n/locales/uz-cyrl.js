@@ -1,7 +1,6 @@
 export default {
   features: {
     unlimitedExam: "Чексиз расмий имтиҳон",
-    premiumThemes: "Премиум ранглар",
     duel: "Дуэл (дўст билан беллашув)",
     trickyTests: "Чалкаш тестлар",
     topicTests: "Мавзули тестлар",
@@ -31,7 +30,7 @@ export default {
     start: "Бошлаш",
     slides: {
       welcome: {
-        title: "TezPrava'га хуш келибсиз!",
+        title: "PravaOl'га хуш келибсиз!",
         desc: "Ҳайдовчилик гувоҳномаси имтиҳонига тайёрланиш учун керакли барча воситалар шу ерда. Келинг, нима борлигини бирга кўриб чиқамиз.",
       },
       officialExam: {
@@ -173,7 +172,7 @@ export default {
     blocked: "Ҳисобингиз блокланган. Ёрдам учун администраторга мурожаат қилинг.",
   },
   login: {
-    title: "TezPrava",
+    title: "PravaOl",
     subtitle: "ЙҲҚ имтиҳонига энг тез тайёргарлик кўриш платформаси",
     telegramButton: "Telegram орқали кириш",
     registerSubtitle: "Бошлашдан олдин бир нечта саволга жавоб беринг",
@@ -263,7 +262,7 @@ export default {
     lobbyWaiting: "Дўстингизни кутмоқдамиз",
     lobbyWaitingSubtitle: "Қуйидаги кодни юборинг ёки Telegram орқали улашинг",
     shareViaTelegram: "Telegram орқали улашиш",
-    shareText: "TezPrava'да дуэльга таклиф қиламан! Код: {{code}}",
+    shareText: "PravaOl'да дуэльга таклиф қиламан! Код: {{code}}",
     enterCode: "Лобби кодини киритинг",
     enterCodeSubtitle: "Дўстингиз юборган 6 хонали кодни киритинг",
     joinLobby: "Қўшилиш",

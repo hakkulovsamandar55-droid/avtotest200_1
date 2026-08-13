@@ -1,7 +1,6 @@
 export default {
   features: {
     unlimitedExam: "Cheksiz rasmiy imtihon",
-    premiumThemes: "Premium ranglar",
     duel: "Duel (do'st bilan bellashuv)",
     trickyTests: "Chalkash testlar",
     topicTests: "Mavzuli testlar",
@@ -31,7 +30,7 @@ export default {
     start: "Boshlash",
     slides: {
       welcome: {
-        title: "TezPrava'ga xush kelibsiz!",
+        title: "PravaOl'ga xush kelibsiz!",
         desc: "Haydovchilik guvohnomasi imtihoniga tayyorlanish uchun kerakli barcha vositalar shu yerda. Keling, nima borligini birga ko'rib chiqamiz.",
       },
       officialExam: {
@@ -173,7 +172,7 @@ export default {
     blocked: "Hisobingiz bloklangan. Yordam uchun administratorga murojaat qiling.",
   },
   login: {
-    title: "TezPrava",
+    title: "PravaOl",
     subtitle: "YHQ imtihoniga eng tez tayyorgarlik ko'rish platformasi",
     telegramButton: "Telegram orqali kirish",
     registerSubtitle: "Boshlashdan oldin bir nechta savolga javob bering",
@@ -263,7 +262,7 @@ export default {
     lobbyWaiting: "Do'stingizni kutmoqdamiz",
     lobbyWaitingSubtitle: "Quyidagi kodni yuboring yoki Telegram orqali ulashing",
     shareViaTelegram: "Telegram orqali ulashish",
-    shareText: "TezPrava'da duelga taklif qilaman! Kod: {{code}}",
+    shareText: "PravaOl'da duelga taklif qilaman! Kod: {{code}}",
     enterCode: "Lobby kodini kiriting",
     enterCodeSubtitle: "Do'stingiz sizga yuborgan 6 xonali kodni kiriting",
     joinLobby: "Qo'shilish",

@@ -5,7 +5,7 @@ import LoginScreen from "./screens/LoginScreen";
 import MainApp from "./screens/MainApp";
 import { setSessionExpiredHandler } from "./api";
 
-// TezPrava — Login -> Asosiy ilova (2 bo'lim)
+// PravaOl — Login -> Asosiy ilova (2 bo'lim)
 //
 // MUHIM: bu yerda ilgari Login -> LoadingScreen -> MainApp uch bosqichli
 // oqim bor edi. LoadingScreen 2-3 soniya SOXTA progress-bar ko'rsatib

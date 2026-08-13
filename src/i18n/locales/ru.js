@@ -1,7 +1,6 @@
 export default {
   features: {
     unlimitedExam: "Неограниченный официальный экзамен",
-    premiumThemes: "Премиум-темы",
     duel: "Дуэль (соревнование с другом)",
     trickyTests: "Запутанные тесты",
     topicTests: "Тесты по темам",
@@ -31,7 +30,7 @@ export default {
     start: "Начать",
     slides: {
       welcome: {
-        title: "Добро пожаловать в TezPrava!",
+        title: "Добро пожаловать в PravaOl!",
         desc: "Здесь собраны все инструменты для подготовки к экзамену на водительское удостоверение. Давайте вместе посмотрим, что есть в приложении.",
       },
       officialExam: {
@@ -173,7 +172,7 @@ export default {
     blocked: "Ваш аккаунт заблокирован. Обратитесь к администратору.",
   },
   login: {
-    title: "TezPrava",
+    title: "PravaOl",
     subtitle: "Платформа для самой быстрой подготовки к экзамену ПДД",
     telegramButton: "Войти через Telegram",
     registerSubtitle: "Прежде чем начать, ответьте на несколько вопросов",
@@ -263,7 +262,7 @@ export default {
     lobbyWaiting: "Ожидаем вашего друга",
     lobbyWaitingSubtitle: "Отправьте код ниже или поделитесь через Telegram",
     shareViaTelegram: "Поделиться через Telegram",
-    shareText: "Приглашаю на дуэль в TezPrava! Код: {{code}}",
+    shareText: "Приглашаю на дуэль в PravaOl! Код: {{code}}",
     enterCode: "Введите код лобби",
     enterCodeSubtitle: "Введите 6-значный код, который прислал друг",
     joinLobby: "Присоединиться",

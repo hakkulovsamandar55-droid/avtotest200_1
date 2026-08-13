@@ -283,7 +283,6 @@ export default function MainApp({ user }) {
           user={user}
           onOpenAdmin={() => setShowAdmin(true)}
           onOpenModerator={() => setShowModerator(true)}
-          onOpenPremium={() => setShowPremium(true)}
           onOpenSupport={() => setShowSupport(true)}
           onOpenReferral={() => setShowReferral(true)}
         />

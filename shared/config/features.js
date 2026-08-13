@@ -27,12 +27,6 @@ export const FEATURES = [
     labelKey: "features.unlimitedExam",
   },
   {
-    key: "premium_themes",
-    // Sozlamalardagi qo'shimcha ranglar to'plami.
-    defaultAccess: ACCESS.PREMIUM,
-    labelKey: "features.premiumThemes",
-  },
-  {
     key: "duel",
     defaultAccess: ACCESS.FREE,
     labelKey: "features.duel",
