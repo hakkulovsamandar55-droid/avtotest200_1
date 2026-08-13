@@ -1,0 +1,369 @@
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
+import { randomUUID } from "crypto";
+import { prisma } from "./db.js";
+import { getRandomExamQuestions } from "./data/ticketsData.js";
+import { recordAnswers } from "./services/questionBankService.js";
+
+// === Duel (jonli musobaqa) rejimi ===
+// Ikkita foydalanuvchi bir xil 20 ta savolni bir vaqtda yechadi.
+// G'olib: kamroq xato qilgan, teng bo'lsa — tezroq tugatgan.
+//
+// Ikki xil topilish usuli bor:
+//   1) Tasodifiy raqib — umumiy navbat (waitingQueue), birinchi kelgan ikkovi juftlanadi.
+//   2) Do'st bilan lobby — bitta foydalanuvchi 6 xonali kod bilan lobby yaratadi,
+//      do'sti shu kodni kiritib qo'shiladi (yoki Telegram havolasi orqali).
+//
+// MUHIM CHEKLOV: barcha holat xotirada (in-memory) saqlanadi — server qayta
+// ishga tushsa yoki bir nechta instansiyada ishlasa (masalan Render'da
+// avtomatik scaling yoqilsa), duel/lobby holati yo'qoladi. Hozircha bitta
+// instansiya uchun yetarli; kelajakda ko'proq foydalanuvchi bo'lsa, Redis
+// kabi umumiy xotira kerak bo'ladi.
+
+const DUEL_DURATION_MS = 3 * 60 * 1000; // 3 daqiqa
+const QUESTIONS_COUNT = 20;
+const LOBBY_TTL_MS = 10 * 60 * 1000; // 10 daqiqa ichida qo'shilmasa, lobby o'chadi
+
+const waitingQueue = []; // { socket, userId, name }
+const activeDuels = new Map(); // duelId -> session
+const socketToDuel = new Map(); // socket.id -> duelId
+
+const lobbies = new Map(); // code -> { hostSocket, hostUserId, hostName, timer }
+const socketToLobby = new Map(); // socket.id -> code
+
+// --- Onlayn foydalanuvchilar soni (Duel bo'limida turganlar) ---
+//
+// Bir foydalanuvchi bir nechta qurilma/tabda ochishi mumkin — shuning uchun
+// socket.id emas, userId to'plamini sanaymiz (bir xil odam ikki marta
+// hisoblanmasin). Har bir userId nechta socket ulanganini kuzatamiz, chunki
+// bitta tab yopilsa ham boshqa tab hali ochiq bo'lishi mumkin.
+const onlineUserSockets = new Map(); // userId -> Set<socket.id>
+
+function markOnline(userId, socketId) {
+  if (!onlineUserSockets.has(userId)) onlineUserSockets.set(userId, new Set());
+  onlineUserSockets.get(userId).add(socketId);
+}
+
+function markOffline(userId, socketId) {
+  const set = onlineUserSockets.get(userId);
+  if (!set) return;
+  set.delete(socketId);
+  if (set.size === 0) onlineUserSockets.delete(userId);
+}
+
+function getOnlineCount() {
+  return onlineUserSockets.size;
+}
+
+function publicQuestion(q, idx) {
+  // "correct" javobni clientga yubormaymiz — aks holda tarmoq orqali
+  // ko'rish mumkin bo'lib qoladi va musobaqa adolatsiz bo'ladi.
+  return { index: idx, id: q.id, text: q.text, image: q.image || null, options: q.options };
+}
+
+function removeFromQueue(socketId) {
+  const idx = waitingQueue.findIndex((w) => w.socket.id === socketId);
+  if (idx !== -1) waitingQueue.splice(idx, 1);
+}
+
+function generateLobbyCode() {
+  // 6 xonali raqamli kod — og'zaki aytish/yozish oson bo'lsin uchun faqat raqamlar
+  let code;
+  do {
+    code = String(Math.floor(100000 + Math.random() * 900000));
+  } while (lobbies.has(code));
+  return code;
+}
+
+function destroyLobby(code) {
+  const lobby = lobbies.get(code);
+  if (!lobby) return;
+  clearTimeout(lobby.timer);
+  socketToLobby.delete(lobby.hostSocket.id);
+  lobbies.delete(code);
+}
+
+function computeScore(player) {
+  const correct = player.answers.filter((a) => a && a.isCorrect).length;
+  return { correct, mistakes: QUESTIONS_COUNT - correct };
+}
+
+function finishDuel(duelId, { forfeitWinnerId } = {}) {
+  const session = activeDuels.get(duelId);
+  if (!session || session.ended) return;
+  session.ended = true;
+  clearTimeout(session.timer);
+
+  const [idA, idB] = Object.keys(session.players);
+  const a = session.players[idA];
+  const b = session.players[idB];
+
+  let winnerId = forfeitWinnerId ?? null;
+
+  if (!winnerId) {
+    const scoreA = computeScore(a);
+    const scoreB = computeScore(b);
+    if (scoreA.mistakes !== scoreB.mistakes) {
+      winnerId = scoreA.mistakes < scoreB.mistakes ? idA : idB;
+    } else {
+      const timeA = a.finishedAtMs ?? Infinity;
+      const timeB = b.finishedAtMs ?? Infinity;
+      if (timeA !== timeB) winnerId = timeA < timeB ? idA : idB;
+      // aks holda — durrang (winnerId null qoladi)
+    }
+  }
+
+  for (const [uid, player] of Object.entries(session.players)) {
+    const opponentId = uid === idA ? idB : idA;
+    const opponent = session.players[opponentId];
+    const myScore = computeScore(player);
+    const oppScore = computeScore(opponent);
+    if (player.socket.connected) {
+      player.socket.emit("duel:result", {
+        duelId,
+        result: winnerId === null ? "draw" : winnerId === uid ? "win" : "lose",
+        forfeit: Boolean(forfeitWinnerId),
+        me: { correct: myScore.correct, mistakes: myScore.mistakes, timeMs: player.finishedAtMs },
+        opponent: {
+          name: opponent.name,
+          correct: oppScore.correct,
+          mistakes: oppScore.mistakes,
+          timeMs: opponent.finishedAtMs,
+        },
+      });
+    }
+    socketToDuel.delete(player.socket.id);
+  }
+
+  activeDuels.delete(duelId);
+}
+
+function createDuel(playerA, playerB) {
+  const duelId = randomUUID();
+  const questions = getRandomExamQuestions().slice(0, QUESTIONS_COUNT);
+
+  const session = {
+    id: duelId,
+    questions,
+    startedAt: Date.now(),
+    ended: false,
+    players: {
+      [playerA.userId]: {
+        socket: playerA.socket,
+        name: playerA.name,
+        answers: new Array(QUESTIONS_COUNT).fill(null),
+        finishedAtMs: null,
+      },
+      [playerB.userId]: {
+        socket: playerB.socket,
+        name: playerB.name,
+        answers: new Array(QUESTIONS_COUNT).fill(null),
+        finishedAtMs: null,
+      },
+    },
+    timer: setTimeout(() => finishDuel(duelId), DUEL_DURATION_MS),
+  };
+
+  activeDuels.set(duelId, session);
+  socketToDuel.set(playerA.socket.id, duelId);
+  socketToDuel.set(playerB.socket.id, duelId);
+
+  const publicQuestions = questions.map(publicQuestion);
+
+  playerA.socket.emit("duel:start", {
+    duelId,
+    questions: publicQuestions,
+    opponent: { name: playerB.name },
+    durationMs: DUEL_DURATION_MS,
+  });
+  playerB.socket.emit("duel:start", {
+    duelId,
+    questions: publicQuestions,
+    opponent: { name: playerA.name },
+    durationMs: DUEL_DURATION_MS,
+  });
+}
+
+export function initDuelSocket(httpServer, { isOriginAllowed } = {}) {
+  // Socket.io ham HTTP API bilan bir xil manba ro'yxatiga bo'ysunadi —
+  // ilgari `origin: "*"` edi, ya'ni istalgan sayt duel socketiga ulanardi.
+  const io = new Server(httpServer, {
+    cors: {
+      origin: (origin, cb) =>
+        !isOriginAllowed || isOriginAllowed(origin)
+          ? cb(null, true)
+          : cb(new Error("CORS: ruxsat etilmagan manba")),
+      credentials: true,
+    },
+  });
+
+  io.use((socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token;
+      if (!token) throw new Error("Token yo'q");
+      socket.auth = jwt.verify(token, process.env.JWT_SECRET);
+      next();
+    } catch {
+      next(new Error("unauthorized"));
+    }
+  });
+
+  io.on("connection", async (socket) => {
+    const userId = String(socket.auth.sub);
+    let name = "Foydalanuvchi";
+    try {
+      const user = await prisma.user.findUnique({ where: { id: socket.auth.sub } });
+      if (user) name = user.name || name;
+    } catch {
+      // Ism topilmasa ham duelga xalaqit bermasin — standart ism bilan davom etadi
+    }
+
+    // Onlayn hisoblagich: bu foydalanuvchi ulandi — barchaga yangi sonni
+    // yuboramiz va o'ziga ham darhol joriy sonni beramiz (birinchi ekranda
+    // ko'rinishi uchun keyingi o'zgarishni kutmasin).
+    markOnline(userId, socket.id);
+    io.emit("duel:online_count", { count: getOnlineCount() });
+
+    // --- Tasodifiy raqib qidirish (matchmaking) ---
+    socket.on("duel:join_queue", () => {
+      // Bir xil foydalanuvchi ikki marta navbatga tushib qolmasin
+      removeFromQueue(socket.id);
+      if (socketToDuel.has(socket.id)) return; // allaqachon duelda
+
+      const opponent = waitingQueue.shift();
+      if (opponent && opponent.userId !== userId) {
+        createDuel(opponent, { socket, userId, name });
+      } else {
+        if (opponent) waitingQueue.push(opponent); // o'zi bilan mos tushmasin
+        waitingQueue.push({ socket, userId, name });
+        socket.emit("duel:queued");
+      }
+    });
+
+    socket.on("duel:leave_queue", () => {
+      removeFromQueue(socket.id);
+    });
+
+    // --- Do'st bilan lobby ---
+    socket.on("duel:create_lobby", () => {
+      if (socketToDuel.has(socket.id)) return; // allaqachon duelda
+      // Foydalanuvchining eski lobbysi bo'lsa — tozalab, yangisini ochamiz
+      const existingCode = socketToLobby.get(socket.id);
+      if (existingCode) destroyLobby(existingCode);
+
+      const code = generateLobbyCode();
+      const timer = setTimeout(() => {
+        const lobby = lobbies.get(code);
+        if (lobby && lobby.hostSocket.connected) {
+          lobby.hostSocket.emit("duel:lobby_expired");
+        }
+        destroyLobby(code);
+      }, LOBBY_TTL_MS);
+
+      lobbies.set(code, { hostSocket: socket, hostUserId: userId, hostName: name, timer });
+      socketToLobby.set(socket.id, code);
+
+      socket.emit("duel:lobby_created", { code });
+    });
+
+    socket.on("duel:cancel_lobby", () => {
+      const code = socketToLobby.get(socket.id);
+      if (code) destroyLobby(code);
+    });
+
+    socket.on("duel:join_lobby", ({ code }) => {
+      const cleanCode = String(code || "").trim();
+      const lobby = lobbies.get(cleanCode);
+
+      if (!lobby) {
+        socket.emit("duel:lobby_error", { reason: "not_found" });
+        return;
+      }
+      if (lobby.hostUserId === userId) {
+        socket.emit("duel:lobby_error", { reason: "self" });
+        return;
+      }
+      if (socketToDuel.has(socket.id) || !lobby.hostSocket.connected) {
+        socket.emit("duel:lobby_error", { reason: "unavailable" });
+        return;
+      }
+
+      destroyLobby(cleanCode);
+      createDuel(
+        { socket: lobby.hostSocket, userId: lobby.hostUserId, name: lobby.hostName },
+        { socket, userId, name }
+      );
+    });
+
+    socket.on("duel:answer", ({ duelId, questionIndex, chosenIndex }) => {
+      const session = activeDuels.get(duelId);
+      if (!session || session.ended) return;
+      const player = session.players[userId];
+      if (!player) return;
+      if (
+        !Number.isInteger(questionIndex) ||
+        questionIndex < 0 ||
+        questionIndex >= QUESTIONS_COUNT
+      )
+        return;
+      if (player.answers[questionIndex] !== null) return; // qayta yuborilishi mumkin emas
+
+      const question = session.questions[questionIndex];
+      const isCorrect = chosenIndex === question.correct;
+      player.answers[questionIndex] = { chosenIndex, isCorrect };
+
+      // MUHIM TUZATISH: duel javoblari ilgari faqat xotirada (session
+      // ichida) turardi — g'olibni aniqlash uchun ishlatilardi, lekin
+      // "Mening xatolarim" bo'limiga umuman yozilmasdi. Endi duelda
+      // qilingan xato ham boshqa rejimlardagi kabi darhol saqlanadi.
+      if (question?.id) {
+        recordAnswers(Number(userId), [{ questionId: question.id, isCorrect }]).catch(() => {
+          // Statistika saqlanmasa ham duel davom etadi
+        });
+      }
+
+      const answeredCount = player.answers.filter((a) => a !== null).length;
+
+      const opponentEntry = Object.entries(session.players).find(([uid]) => uid !== userId);
+      if (opponentEntry) {
+        const [, opponent] = opponentEntry;
+        if (opponent.socket.connected) {
+          opponent.socket.emit("duel:opponent_progress", { answered: answeredCount });
+        }
+      }
+
+      if (answeredCount === QUESTIONS_COUNT) {
+        player.finishedAtMs = Date.now() - session.startedAt;
+        const otherEntry = Object.entries(session.players).find(([uid]) => uid !== userId);
+        if (otherEntry) {
+          const [otherUid, otherPlayer] = otherEntry;
+          if (otherPlayer.socket.connected) {
+            otherPlayer.socket.emit("duel:opponent_finished");
+          }
+          if (otherPlayer.finishedAtMs !== null) {
+            finishDuel(duelId);
+          }
+        }
+      }
+    });
+
+    socket.on("disconnect", () => {
+      removeFromQueue(socket.id);
+      markOffline(userId, socket.id);
+      io.emit("duel:online_count", { count: getOnlineCount() });
+
+      const lobbyCode = socketToLobby.get(socket.id);
+      if (lobbyCode) destroyLobby(lobbyCode);
+
+      const duelId = socketToDuel.get(socket.id);
+      if (!duelId) return;
+      const session = activeDuels.get(duelId);
+      if (!session || session.ended) return;
+      const otherUid = Object.keys(session.players).find((uid) => uid !== userId);
+      // Raqib chiqib ketsa, qolgan o'yinchi avtomatik g'olib bo'ladi
+      finishDuel(duelId, { forfeitWinnerId: otherUid });
+    });
+  });
+
+  return io;
+}
