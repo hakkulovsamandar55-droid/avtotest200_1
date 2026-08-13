@@ -4,3 +4,6 @@ export { default as ScreenHeader } from "./ScreenHeader";
 export { default as ProgressBar } from "./ProgressBar";
 export { default as ListRow } from "./ListRow";
 export { default as EmptyState } from "./EmptyState";
+export { default as Ring } from "./Ring";
+export { default as Group } from "./Group";
+export { default as Chip } from "./Chip";
