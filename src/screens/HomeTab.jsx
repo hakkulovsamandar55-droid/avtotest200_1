@@ -114,6 +114,26 @@ export default function HomeTab({
         </div>
       </div>
 
+      {/* PREMIUM — endi eng yuqorida, birinchi ko'zga tashlanadigan joyda.
+          Premium foydalanuvchiga ko'rsatilmaydi. */}
+      {!user?.isPremium && (
+        <div className="px-5 mt-4">
+          <button
+            onClick={onOpenPremium}
+            className="w-full rounded-2xl px-4 py-3.5 flex items-center gap-3 text-left bg-warning active:scale-[0.99] transition-transform"
+          >
+            <span className="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center shrink-0">
+              <Crown size={19} className="text-accent-ink" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block font-extrabold text-[13.5px] text-accent-ink">{t("settings.premium")}</span>
+              <span className="block text-[11px] text-accent-ink/75 mt-0.5 truncate">{t("settings.premiumSubtitle")}</span>
+            </span>
+            <ChevronRight size={18} className="text-accent-ink shrink-0" />
+          </button>
+        </div>
+      )}
+
       {/* HALQA — tayyorgarlik darajasi, markaziy e'tibor */}
       <div className="flex flex-col items-center mt-6">
         <Ring value={readiness} label={`${readiness}%`} caption={t("home.readinessShort")} onClick={onOpenStats} />
@@ -173,26 +193,6 @@ export default function HomeTab({
           })}
         </Group>
       </div>
-
-      {/* PREMIUM — sozlamalardan bu yerga ko'chirildi, asosiy oqimda
-          ko'rinadigan qilib. Premium foydalanuvchiga ko'rsatilmaydi. */}
-      {!user?.isPremium && (
-        <div className="px-5 mt-4">
-          <button
-            onClick={onOpenPremium}
-            className="w-full rounded-2xl p-4 flex items-center gap-3.5 text-left bg-warning active:scale-[0.99] transition-transform"
-          >
-            <span className="w-11 h-11 rounded-full bg-white/25 flex items-center justify-center shrink-0">
-              <Crown size={20} className="text-accent-ink" />
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block font-extrabold text-[14px] text-accent-ink">{t("settings.premium")}</span>
-              <span className="block text-[11.5px] text-accent-ink/75 mt-0.5">{t("settings.premiumSubtitle")}</span>
-            </span>
-            <ChevronRight size={18} className="text-accent-ink shrink-0" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

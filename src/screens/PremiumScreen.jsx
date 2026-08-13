@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Sparkles, Clock } from "../icons";
+import { Check, Crown, Sparkles } from "../icons";
 import { PREMIUM_PLANS, formatPrice } from "../../shared/data/premiumPlans";
 import { api } from "../api";
-import { QuizShell, QuizHeader, QuizButton } from "../components/exam/QuizUI";
-import { QUIZ } from "../quizTheme";
+import { ScreenHeader, Group, Button } from "../components/ui";
 
 // MUHIM: bu endi UCH XIL mahsulot (Lite/Pro/VIP) emas — BITTA imkoniyatlar
 // to'plami, faqat MUDDATI (15/30/90 kun) tanlanadi. Shu sababli imkoniyatlar
-// ro'yxati faqat BIR MARTA, yuqorida ko'rsatiladi; pastda esa foydalanuvchi
-// muddatni tanlaydi (uzoqroq muddat — kunlik hisobda arzonroq).
+// ro'yxati faqat BIR MARTA ko'rsatiladi; muddat esa yuqorida, segment
+// tugmalar orqali tanlanadi (eski vertikal narx-ro'yxati o'rniga).
 export default function PremiumScreen({ onBack, onSelectPlan }) {
   const { t } = useTranslation();
   // Narxlar serverdan olinadi (DB'da saqlanadi, admin panelidan
@@ -51,113 +50,94 @@ export default function PremiumScreen({ onBack, onSelectPlan }) {
 
   const selectedPlan = plans.find((p) => p.key === selectedKey) || plans[0];
   const features = selectedPlan?.features || [];
-
-  function dailyRate(plan) {
-    const priceInfo = prices?.[plan.key];
-    const amount = priceInfo ? priceInfo.amount : plan.price;
-    return Math.round(amount / plan.durationDays);
-  }
+  const priceInfo = prices?.[selectedPlan?.key];
+  const hasDiscount = priceInfo?.discountPercent > 0;
+  const displayAmount = priceInfo ? priceInfo.amount : selectedPlan?.price;
+  const dailyRate = selectedPlan ? Math.round(displayAmount / selectedPlan.durationDays) : 0;
 
   return (
-    <QuizShell>
-      <QuizHeader title={t("premium.title")} subtitle={t("premium.subtitle")} onBack={onBack} />
+    <div className="flex-1 overflow-y-auto tp-safe-top pb-8 animate-slide-in">
+      <div className="px-5">
+        <ScreenHeader title={t("premium.title")} onBack={onBack} />
+      </div>
 
-      {/* Imkoniyatlar — barcha muddatlar uchun bir xil, shuning uchun bir marta */}
-      <div className="rounded-3xl p-5 mb-5 border" style={{ background: "rgba(45,212,191,0.08)", borderColor: "rgba(45,212,191,0.3)" }}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: QUIZ.accent }}>
-            <Sparkles size={20} color={QUIZ.accentInk} />
-          </div>
-          <p className="font-extrabold text-lg leading-none">{t("premium.proTitle")}</p>
+      {/* HERO — katta belgi + sarlavha, eski kichik chap tomonlama panel o'rniga */}
+      <div className="flex flex-col items-center text-center px-6 mt-2">
+        <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center">
+          <Crown size={30} className="text-accent-ink" />
         </div>
-        <div className="space-y-2">
+        <h2 className="text-xl font-extrabold text-main mt-4">{t("premium.proTitle")}</h2>
+        <p className="text-muted text-sm mt-1.5 max-w-[260px]">{t("premium.subtitle")}</p>
+      </div>
+
+      {/* MUDDAT — gorizontal segment tugmalar, vertikal narx-ro'yxati o'rniga */}
+      <div className="px-5 mt-6">
+        <div className="flex gap-2 rounded-2xl bg-sunken p-1.5">
+          {plans.map((plan) => {
+            const active = plan.key === selectedKey;
+            return (
+              <button
+                key={plan.key}
+                onClick={() => setSelectedKey(plan.key)}
+                className={`relative flex-1 rounded-xl py-2.5 text-sm font-bold transition-all ${
+                  active ? "bg-accent text-accent-ink" : "text-muted"
+                }`}
+              >
+                {plan.name}
+                {plan.badge && !active && (
+                  <span className="absolute -top-2 -right-1 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full bg-warning text-accent-ink">
+                    {plan.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* NARX — markazda katta ko'rsatkich */}
+      <div className="flex flex-col items-center mt-6">
+        {hasDiscount && (
+          <p className="text-muted text-sm line-through">{formatPrice(priceInfo.originalAmount)} so'm</p>
+        )}
+        <p className="text-[38px] font-extrabold text-main leading-none tabular-nums">
+          {formatPrice(displayAmount)}
+          <span className="text-base font-semibold text-muted"> so'm</span>
+        </p>
+        <p className="text-muted text-xs mt-1.5">{t("premium.perDay", { amount: formatPrice(dailyRate) })}</p>
+        {hasDiscount && (
+          <span className="mt-2 text-[11px] font-bold text-success bg-success/10 rounded-full px-2.5 py-1">
+            −{priceInfo.discountPercent}%
+          </span>
+        )}
+      </div>
+
+      {/* IMKONIYATLAR — guruhlangan ro'yxat, butun ilova bilan bir xil til */}
+      <div className="px-5 mt-7">
+        <div className="flex items-center gap-2 mb-2 ml-1">
+          <Sparkles size={13} className="text-accent" />
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.11em] text-muted">
+            {t("premium.proTitle")}
+          </p>
+        </div>
+        <Group>
           {features.map((f, i) => (
-            <div key={i} className="flex items-start gap-2">
-              <Check size={14} className="mt-[3px] shrink-0" color={QUIZ.accent} />
-              <span className="text-xs leading-snug" style={{ color: "#D1D5DB" }}>
-                {f}
+            <div key={i} className="flex items-start gap-3 px-4 py-3">
+              <span className="w-6 h-6 rounded-full bg-success/15 flex items-center justify-center shrink-0 mt-0.5">
+                <Check size={12} className="text-success" />
               </span>
+              <span className="text-[13px] text-main leading-snug pt-0.5">{f}</span>
             </div>
           ))}
-        </div>
+        </Group>
       </div>
 
-      {/* Muddat tanlash */}
-      <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: QUIZ.muted }}>
-        {t("premium.choosePeriod")}
-      </p>
-
-      <div className="space-y-3 mb-6">
-        {plans.map((plan) => {
-          const priceInfo = prices?.[plan.key];
-          const hasDiscount = priceInfo?.discountPercent > 0;
-          const displayAmount = priceInfo ? priceInfo.amount : plan.price;
-          const isSelected = selectedKey === plan.key;
-
-          return (
-            <button
-              key={plan.key}
-              onClick={() => setSelectedKey(plan.key)}
-              className="w-full text-left rounded-2xl p-4 flex items-center gap-3 transition-all border"
-              style={
-                isSelected
-                  ? { background: "rgba(45,212,191,0.1)", borderColor: QUIZ.accent }
-                  : { background: QUIZ.card, borderColor: QUIZ.border }
-              }
-            >
-              <div
-                className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
-                style={{ borderColor: isSelected ? QUIZ.accent : QUIZ.border }}
-              >
-                {isSelected && <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUIZ.accent }} />}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-sm">{plan.name}</p>
-                  {plan.badge && (
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ background: QUIZ.accent, color: QUIZ.accentInk }}>
-                      {plan.badge}
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] mt-0.5 flex items-center gap-1" style={{ color: QUIZ.muted }}>
-                  <Clock size={10} />
-                  {t("premium.perDay", { amount: formatPrice(dailyRate(plan)) })}
-                </p>
-              </div>
-
-              <div className="text-right shrink-0">
-                {hasDiscount && (
-                  <p className="text-[11px] line-through leading-none mb-0.5" style={{ color: QUIZ.muted }}>
-                    {formatPrice(priceInfo.originalAmount)}
-                  </p>
-                )}
-                <p className="font-extrabold text-base leading-none">
-                  {formatPrice(displayAmount)}
-                  <span className="text-[10px] font-medium" style={{ color: QUIZ.muted }}>
-                    {" "}
-                    so'm
-                  </span>
-                </p>
-                {hasDiscount && (
-                  <p className="text-[10px] font-bold mt-1" style={{ color: QUIZ.success }}>
-                    −{priceInfo.discountPercent}%
-                  </p>
-                )}
-              </div>
-            </button>
-          );
-        })}
+      <div className="px-5 mt-6">
+        <Button onClick={() => onSelectPlan?.(selectedPlan)} size="lg" className="w-full">
+          {t("premium.select", { name: selectedPlan.name })}
+        </Button>
+        <p className="text-center text-soft text-[11px] mt-4 leading-relaxed px-4">{t("premium.disclaimer")}</p>
       </div>
-
-      <QuizButton onClick={() => onSelectPlan?.(selectedPlan)}>
-        {t("premium.select", { name: selectedPlan.name })}
-      </QuizButton>
-
-      <p className="text-center text-[11px] mt-6 leading-relaxed px-4" style={{ color: QUIZ.muted }}>
-        {t("premium.disclaimer")}
-      </p>
-    </QuizShell>
+    </div>
   );
 }
