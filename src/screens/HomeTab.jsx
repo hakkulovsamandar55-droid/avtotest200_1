@@ -84,56 +84,56 @@ export default function HomeTab({
 
   const tiles = [
     {
-      key: "practice",
+      tileKey: "practice",
       icon: Play,
       title: t("home.dailyPractice"),
       sub: t("home.chooseQuestionCount"),
       onClick: onOpenExam,
     },
     {
-      key: "tickets",
+      tileKey: "tickets",
       icon: Layers,
       title: t("home.tickets"),
       sub: `${learned}%`,
       onClick: onOpenTickets,
     },
     {
-      key: "signs",
+      tileKey: "signs",
       icon: TrafficCone,
       title: t("home.roadSigns"),
       sub: t("home.roadSignsSubtitle"),
       onClick: onOpenSigns,
     },
     {
-      key: "topics",
+      tileKey: "topics",
       icon: BookOpen,
       title: t("home.topicTests"),
       sub: t("home.topicTestsSubtitle"),
       onClick: onOpenTopics,
     },
     {
-      key: "mistakes",
+      tileKey: "mistakes",
       icon: AlertTriangle,
       title: t("home.mistakes"),
       sub: t("home.mistakesSubtitle"),
       onClick: onOpenMistakes,
     },
     {
-      key: "saved",
+      tileKey: "saved",
       icon: Bookmark,
       title: t("home.savedQuestions"),
       sub: t("home.savedQuestionsSubtitle"),
       onClick: onOpenSaved,
     },
     {
-      key: "tricky",
+      tileKey: "tricky",
       icon: Shuffle,
       title: t("home.trickyTests"),
       sub: t("home.trickyTestsSubtitle"),
       onClick: onOpenTricky,
     },
     {
-      key: "duel",
+      tileKey: "duel",
       icon: Swords,
       title: t("home.duel"),
       sub: t("home.duelSubtitle"),
@@ -194,10 +194,10 @@ export default function HomeTab({
       {/* KAFELLAR */}
       <div className="grid grid-cols-2 gap-[11px] mt-3">
         {tiles.map((tile) => {
-          const locked = isLocked(tile.key);
+          const locked = isLocked(tile.tileKey);
           return (
             <Tile
-              key={tile.key}
+              key={tile.tileKey}
               {...tile}
               locked={locked}
               // Qulflangan kafel bosilganda premium ekraniga olib boradi —
