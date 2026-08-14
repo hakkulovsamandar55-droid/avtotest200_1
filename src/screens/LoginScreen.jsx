@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Clock, Cake } from "../icons";
+import { ChevronRight, Check } from "../icons";
 import GradientIcon from "../components/GradientIcon";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import { Button } from "../components/ui";
+import { Button, Group } from "../components/ui";
 import { api, setToken } from "../api";
 
 // Foydalanuvchi bir marta to'ldirgan ro'yxatdan o'tish anketasi shu yerda
@@ -37,12 +37,14 @@ const STUDY_TIME_OPTIONS = [
   { value: 90, labelKey: "login.studyTime.min90plus" },
 ];
 
-function FormField({ icon: Icon, label, children }) {
+// Guruh ichidagi bitta qator — chap tomonda yorliq, o'ngda tahrirlanadigan
+// maydon. Eski variant har bir maydonni alohida (icon + label + input)
+// blok qilib chizardi; endi Sozlamalar bo'limidagi kabi bitta yaxlit
+// ro'yxat qatorlari, ilova ichida allaqachon tanish bo'lgan uslub.
+function FieldRow({ label, children }) {
   return (
-    <div>
-      <label className="text-xs text-muted mb-1.5 flex items-center gap-1.5">
-        <Icon size={13} /> {label}
-      </label>
+    <div className="flex items-center gap-3 px-4 py-3.5">
+      <span className="text-sm font-medium text-main w-24 shrink-0">{label}</span>
       {children}
     </div>
   );
@@ -143,97 +145,91 @@ export default function LoginScreen({ onLogin, externalNotice }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-app px-6 overflow-y-auto">
-      <div className="flex justify-end pt-4">
+    <div className="flex flex-col h-full bg-app overflow-y-auto">
+      {/* Sarlavha — endi kompakt gorizontal qator (katta markazlashgan hero
+          o'rniga), logotip va nom yonma-yon, forma uchun ko'proq joy qoladi */}
+      <div className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top,0px)+1rem)]">
+        <div className="flex items-center gap-3 min-w-0">
+          <GradientIcon size={44} />
+          <div className="min-w-0">
+            <h1 className="text-[17px] font-extrabold text-main leading-tight truncate">{t("login.title")}</h1>
+            <p className="text-[11px] text-muted truncate">{t("login.subtitle")}</p>
+          </div>
+        </div>
         <LanguageSwitcher variant="compact" />
       </div>
 
-      <div className="flex flex-col items-center gap-5 pt-2 pb-8">
-        <GradientIcon />
-        <div className="text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight text-main">
-            {t("login.title")}
-          </h1>
-          <p className="text-muted text-sm mt-2 max-w-[280px] mx-auto">
-            {t("login.registerSubtitle")}
-          </p>
-        </div>
+      <div className="px-5 mt-6">
+        <p className="text-muted text-[13px] mb-3 ml-1">{t("login.registerSubtitle")}</p>
 
-        <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-4 mt-2">
-          <FormField icon={User} label={t("login.nameLabel")}>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("login.namePlaceholder")}
-              maxLength={80}
-              className="w-full rounded-xl px-4 py-3 text-sm"
-            />
-          </FormField>
+        <form onSubmit={handleSubmit}>
+          <Group>
+            <FieldRow label={t("login.nameLabel")}>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("login.namePlaceholder")}
+                maxLength={80}
+                className="flex-1 min-w-0 bg-transparent border-none px-0 py-0 text-sm text-right focus:outline-none"
+              />
+            </FieldRow>
+            <FieldRow label={t("login.ageLabel")}>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={5}
+                max={100}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder={t("login.agePlaceholder")}
+                className="flex-1 min-w-0 bg-transparent border-none px-0 py-0 text-sm text-right focus:outline-none"
+              />
+            </FieldRow>
+          </Group>
 
-          <FormField icon={Cake} label={t("login.ageLabel")}>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={5}
-              max={100}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              placeholder={t("login.agePlaceholder")}
-              className="w-full rounded-xl px-4 py-3 text-sm"
-            />
-          </FormField>
+          {/* Kuniga qancha shug'ullanish — endi gorizontal suriladigan
+              kapsulalar qatori, 2 ustunli katak to'ri o'rniga */}
+          <p className="text-muted text-[13px] mt-5 mb-2 ml-1">{t("login.studyTimeLabel")}</p>
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
+            {STUDY_TIME_OPTIONS.map((opt) => {
+              const active = studyMinutes === opt.value;
+              return (
+                <button
+                  type="button"
+                  key={opt.value}
+                  onClick={() => setStudyMinutes(opt.value)}
+                  className={`shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-semibold border transition-colors ${
+                    active ? "bg-accent text-accent-ink border-accent" : "bg-surface text-muted border-line"
+                  }`}
+                >
+                  {active && <Check size={13} />}
+                  {t(opt.labelKey)}
+                </button>
+              );
+            })}
+          </div>
 
-          <FormField icon={Clock} label={t("login.studyTimeLabel")}>
-            <div className="grid grid-cols-2 gap-2">
-              {STUDY_TIME_OPTIONS.map((opt) => {
-                const active = studyMinutes === opt.value;
-                return (
-                  <button
-                    type="button"
-                    key={opt.value}
-                    onClick={() => setStudyMinutes(opt.value)}
-                    className={`rounded-xl px-3 py-2.5 text-xs font-semibold border transition-colors ${
-                      active
-                        ? "bg-accent text-accent-ink border-accent"
-                        : "bg-surface text-muted border-line"
-                    }`}
-                  >
-                    {t(opt.labelKey)}
-                  </button>
-                );
-              })}
-            </div>
-          </FormField>
-
-          <Button
-            type="submit"
-            size="lg"
-            disabled={!isFormValid || connecting}
-            className="w-full mt-2"
-          >
+          <Button type="submit" size="lg" disabled={!isFormValid || connecting} className="w-full mt-6">
             {connecting ? (
               <>
                 <span className="w-4 h-4 rounded-full border-2 border-accent-ink/40 border-t-accent-ink animate-spin" />
                 {t("login.connecting")}
               </>
             ) : (
-              t("login.registerButton")
+              <>
+                {t("login.registerButton")}
+                <ChevronRight size={17} />
+              </>
             )}
           </Button>
 
-          <p className="text-center text-soft text-xs leading-relaxed px-2">
-            {t("login.consent")}
-          </p>
-          {error && (
-            <p className="text-center text-danger text-xs leading-relaxed px-2">
-              {error}
-            </p>
-          )}
+          <p className="text-center text-soft text-xs leading-relaxed px-2 mt-4">{t("login.consent")}</p>
+          {error && <p className="text-center text-danger text-xs leading-relaxed px-2 mt-2">{error}</p>}
         </form>
       </div>
 
-      <div className="pb-8 mt-auto text-center text-soft text-xs">
+      <div className="pb-8 mt-auto pt-6 text-center text-soft text-xs">
         @{import.meta.env.VITE_BOT_USERNAME || "pravaolbot"}
       </div>
     </div>
