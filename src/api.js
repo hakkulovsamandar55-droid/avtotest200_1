@@ -1,7 +1,11 @@
 // Backend bilan gaplashish uchun yagona joy.
 // Serverni boshqa manzilga ko'chirsangiz, faqat shu bitta o'zgaruvchini yangilang:
 // .env faylga VITE_API_URL=https://sizning-serveringiz.com qo'ying.
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+//
+// Oxiridagi "/" olib tashlanadi — aks holda "https://x.com/" + "/api/..." qo'sh
+// slash bilan ("https://x.com//api/...") ketib, serverda 404 ga uchraydi (bu
+// productionda haqiqatan yuz bergan xato edi, shuning uchun himoya qo'shildi).
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3001").replace(/\/+$/, "");
 
 const TOKEN_KEY = "pravaol_token";
 
