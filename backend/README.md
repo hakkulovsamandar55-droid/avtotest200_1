@@ -25,7 +25,7 @@ docker compose up -d
 Bazani sozlash (jadvallarni yaratish):
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 ```
 
 Serverni ishga tushirish:
@@ -43,8 +43,13 @@ Bu loyiha shu maqsadda maxsus qilingan — hech qanday hostga qaramay ishlaydi:
 1. Kodni yangi serverga ko'chiring (`git clone` yoki fayllarni yuklash)
 2. `.env` faylni yangi server uchun to'ldiring (ayniqsa `DATABASE_URL`)
 3. `npm install`
-4. `npx prisma db push` — jadval tuzilmasini bazada yaratadi (bu loyihada migration fayllar emas, to'g'ridan-to'g'ri sxema surilyapti — Render'dagi Build Command ham shuni ishlatishi kerak: `npm install && npx prisma generate && npx prisma db push`)
+4. `npx prisma migrate deploy` — `prisma/migrations/` papkasidagi migratsiyalarni ketma-ket qo'llab, jadvallarni yaratadi (Render'dagi Build Command: `npm install && npx prisma generate && npx prisma migrate deploy`)
 5. `npm start`
+
+> **DIQQAT:** `npx prisma db push` ni production serverda ishlatmang — u
+> migratsiya tarixini hisobga olmaydi va ustunlarni ogohlantirmasdan
+> o'chirib yuborishi mumkin. Faqat `migrate deploy` ishlating (bo'sh
+> bazada ham, mavjud bazada ham xavfsiz ishlaydi).
 
 Eski bazadagi ma'lumotlarni ham ko'chirmoqchi bo'lsangiz:
 
@@ -76,6 +81,3 @@ har safar botga kirganda avtomatik `ADMIN` roliga o'tadi. Boshqa yo'l —
 | `/api/stats/attempt` | POST | Login kerak. `{ type: "TICKET"\|"EXAM", ticketNumber?, correctCount, totalCount, passed }` — bilet testi yoki imtihon yakunlanganda natijani saqlaydi |
 | `/api/stats/me` | GET | Login kerak. Foydalanuvchining haqiqiy statistikasini (aniqlik, streak, imtihonga tayyorgarlik va h.k.) hisoblab qaytaradi |
 
-`Attempt` jadvali yangi qo'shildi — Render'dagi build command allaqachon
-`npx prisma db push` ishlatgani uchun keyingi deploy'da jadval avtomatik
-yaratiladi, qo'shimcha qadam kerak emas.

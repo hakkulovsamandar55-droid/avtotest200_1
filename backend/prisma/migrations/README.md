@@ -1,58 +1,41 @@
-# Migratsiyalar haqida muhim eslatma
+# Migratsiyalar haqida eslatma
 
-## Holat
+## Holat (2026-08-14 dan boshlab)
 
-Bu loyiha ilgari `prisma db push` bilan ishlagan, ya'ni **migratsiya fayllari
-saqlanmagan**. `20260722000000_official_exam` — birinchi haqiqiy migratsiya.
+Eski tarixiy migratsiyalar (`20260722000000_official_exam` va undan keyingilari)
+`users` jadvali allaqachon mavjud deb taxmin qilar edi — chunki loyiha ilgari
+`prisma db push` bilan boshlangan va sxema jadvallarini yaratuvchi asl
+migratsiya hech qachon fayl sifatida saqlanmagan edi. Natijada **bo'sh
+bazada** (yangi server, yangi Neon loyihasi) `npx prisma migrate deploy`
+xato bilan to'xtar edi: `column "users" does not exist` / shunga o'xshash.
 
-Shu sababli production bazasida allaqachon mavjud jadvallar (users, attempts,
-payment_requests va h.k.) uchun "baseline" belgilash kerak, aks holda
-`prisma migrate deploy` ularni yaratishga urinib xato beradi.
+Bu muammo hal qilindi: barcha eski migratsiyalar bitta yagona **baseline**
+migratsiyaga (`20260814070000_init`) birlashtirildi — u `schema.prisma`
+faylidagi joriy holatni noldan (bo'sh bazadan) to'liq yaratadi. Tekshirildi:
+mahalliy PostgreSQL'da bo'sh bazaga qo'llanganda `prisma migrate diff`
+"farq yo'q" (no drift) deb tasdiqladi.
 
-## Birinchi marta (faqat BIR MARTA bajariladi)
+## Yangi server o'rnatishda (bo'sh baza)
 
-### Agar bazada ma'lumot BOR bo'lsa (production)
-
-1. Avval **zaxira nusxa** oling:
-
-   ```bash
-   pg_dump $DATABASE_URL > backup-$(date +%F).sql
-   ```
-
-2. Mavjud sxema uchun baseline migratsiya yarating:
-
-   ```bash
-   mkdir -p prisma/migrations/00000000000000_baseline
-   npx prisma migrate diff \
-     --from-empty \
-     --to-schema-datamodel prisma/schema.prisma \
-     --script > prisma/migrations/00000000000000_baseline/migration.sql
-   ```
-
-   > DIQQAT: hosil bo'lgan faylda `exam_attempts`, `exam_events` va
-   > `show_on_leaderboard` ham bo'ladi (chunki ular schema.prisma da bor).
-   > Ularni baseline fayldan **qo'lda o'chiring** — ular keyingi
-   > migratsiyada (`20260722000000_official_exam`) qo'llanadi.
-
-3. Baseline'ni "allaqachon qo'llangan" deb belgilang:
-
-   ```bash
-   npx prisma migrate resolve --applied 00000000000000_baseline
-   ```
-
-4. Endi rasmiy imtihon migratsiyasini qo'llang:
-
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-### Agar baza BO'SH bo'lsa (yangi o'rnatish)
-
-Yuqoridagi qadamlar kerak emas:
+Boshqa hech narsa kerak emas — shunchaki:
 
 ```bash
 npx prisma migrate deploy
 ```
+
+## Agar sizda ESKI, allaqachon ma'lumot bor baza bo'lsa
+
+Bu holat kamdan-kam (masalan, `20260814070000_init`dan OLDIN allaqachon
+production'da ishlatilgan Neon bazasi bo'lsa). Bunday holatda:
+
+1. Avval zaxira nusxa oling: `pg_dump $DATABASE_URL > backup-$(date +%F).sql`
+2. Baseline'ni "allaqachon qo'llangan" deb belgilang (jadvallarni qayta
+   yaratishga urinmasin):
+   ```bash
+   npx prisma migrate resolve --applied 20260814070000_init
+   ```
+3. Keyingi safar `npx prisma migrate deploy` faqat shu sanadan keyingi
+   yangi migratsiyalarni qo'llaydi.
 
 ## Bundan keyin
 
