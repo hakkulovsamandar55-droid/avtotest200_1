@@ -1521,9 +1521,11 @@ export function getAllQuestions(lang = "uz_latn") {
 }
 
 // Imtihon rejimi uchun — har chaqirilganda TASODIFIY savollar
-// (barcha bilet bazasidan aralashtirilib, QUESTIONS_PER_TICKET dona, berilgan tilda)
-export function getRandomExamQuestions(lang = "uz_latn") {
+// (barcha bilet bazasidan aralashtirilib, `count` dona — standart holatda
+// QUESTIONS_PER_TICKET, berilgan tilda). `count` chaqiruvchiga qarab farq
+// qiladi (masalan duel rejimi 20 ta savol talab qiladi).
+export function getRandomExamQuestions(lang = "uz_latn", count = QUESTIONS_PER_TICKET) {
   const allQuestions = getAllQuestions(lang);
   const rand = Math.random;
-  return shuffleWithSeed(allQuestions, rand).slice(0, QUESTIONS_PER_TICKET);
+  return shuffleWithSeed(allQuestions, rand).slice(0, count);
 }

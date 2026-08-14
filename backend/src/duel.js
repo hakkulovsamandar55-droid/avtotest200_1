@@ -140,7 +140,7 @@ function finishDuel(duelId, { forfeitWinnerId } = {}) {
 
 function createDuel(playerA, playerB) {
   const duelId = randomUUID();
-  const questions = getRandomExamQuestions().slice(0, QUESTIONS_COUNT);
+  const questions = getRandomExamQuestions("uz_latn", QUESTIONS_COUNT);
 
   const session = {
     id: duelId,

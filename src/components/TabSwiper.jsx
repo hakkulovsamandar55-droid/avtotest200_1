@@ -8,6 +8,23 @@ const SWIPE_RATIO = 0.22; // konteyner kengligining shuncha qismidan ko'p surils
 const FLICK_VELOCITY = 0.55; // px/ms — tez "urib" suriganda kam masofada ham o'tkazadi
 const EASE = "transform 0.32s cubic-bezier(0.16,1,0.3,1)";
 
+// Ichkarida o'zining gorizontal skrolli bo'lgan elementni (masalan Chip
+// qatorlari, overflow-x-auto) topadi — bosilgan joydan `root`gacha yuqoriga
+// qarab yuradi. Topilsa, bo'lim almashtirish gesture'i shu elementga
+// "yo'l bo'shatadi", aks holda ichki qator hech qachon o'zi suril olmasdi
+// (tashqi TabSwiper har doim uni bosib o'tardi).
+function findHorizontalScroller(el, root) {
+  let node = el;
+  while (node && node !== root) {
+    if (node.scrollWidth > node.clientWidth + 1) {
+      const style = getComputedStyle(node);
+      if (/(auto|scroll)/.test(style.overflowX)) return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+
 export default function TabSwiper({ tabs, active, onChange, children }) {
   const containerRef = useRef(null);
   const trackRef = useRef(null);
@@ -53,6 +70,7 @@ export default function TabSwiper({ tabs, active, onChange, children }) {
         startY: t.clientY,
         lastX: t.clientX,
         lastT: Date.now(),
+        startTarget: e.target,
       };
     }
 
@@ -66,8 +84,20 @@ export default function TabSwiper({ tabs, active, onChange, children }) {
       if (s.axis === null) {
         if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
         s.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+
+        if (s.axis === "x") {
+          const scroller = findHorizontalScroller(s.startTarget, container);
+          if (scroller) {
+            const atLeftEdge = scroller.scrollLeft <= 0;
+            const atRightEdge = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+            const draggingTowardRight = dx < 0; // qatorning o'ng tomonini ochadi
+            if ((draggingTowardRight && !atRightEdge) || (!draggingTowardRight && !atLeftEdge)) {
+              s.axis = "innerScroll"; // ichki qator hali suriladigan joyi bor — unga bo'shatib beramiz
+            }
+          }
+        }
       }
-      if (s.axis !== "x") return; // vertikal scroll — brauzerning o'ziga qoldiramiz
+      if (s.axis !== "x") return; // vertikal scroll yoki ichki gorizontal skroll — brauzerning o'ziga qoldiramiz
 
       e.preventDefault();
       s.lastX = t.clientX;
