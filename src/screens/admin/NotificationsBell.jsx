@@ -23,10 +23,17 @@ export default function NotificationsBell({ onOpenLink }) {
   const ref = useRef(null);
 
   function load() {
-    api.getNotifications().then((data) => {
-      setNotifications(data.notifications);
-      setUnreadCount(data.unreadCount);
-    });
+    api
+      .getNotifications()
+      .then((data) => {
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      })
+      .catch(() => {
+        // Vaqtinchalik tarmoq xatosi — jimgina o'tkazib yuboramiz, keyingi
+        // 15 soniyalik urinishda qayta yuklanadi. Butun admin panelni
+        // bitta muvaffaqiyatsiz so'rov tufayli buzib qo'ymaslik kerak.
+      });
   }
 
   useEffect(() => {
