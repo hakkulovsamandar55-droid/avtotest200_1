@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Zap, ListChecks, Trophy, Flame, Clock } from "../icons";
+import { Zap, ListChecks, Trophy, Flame, Clock, Target, BookOpen, Gauge, ClipboardCheck } from "../icons";
 import { api } from "../api";
 import { Ring, Group, Chip } from "../components/ui";
 
@@ -54,10 +54,10 @@ export default function StatsTab() {
         <Group>
           <MetricRow icon={Zap} label={t("stats.accuracy")} value={`${s.accuracy}%`} pct={s.accuracy} />
           <MetricRow icon={ListChecks} label={t("stats.solved")} value={String(s.solved)} />
-          <MetricRow label={t("stats.passChance")} value={`${s.passChance}%`} pct={s.passChance} />
-          <MetricRow label={t("stats.learnedQuestions")} value={`${s.learnedQuestionsPct}%`} pct={s.learnedQuestionsPct} />
-          <MetricRow label={t("stats.masteryQuality")} value={`${s.masteryQualityPct}%`} pct={s.masteryQualityPct} />
-          <MetricRow label={t("stats.examResults")} value={`${s.examResultsPct}%`} pct={s.examResultsPct} />
+          <MetricRow icon={Target} label={t("stats.passChance")} value={`${s.passChance}%`} pct={s.passChance} />
+          <MetricRow icon={BookOpen} label={t("stats.learnedQuestions")} value={`${s.learnedQuestionsPct}%`} pct={s.learnedQuestionsPct} />
+          <MetricRow icon={Gauge} label={t("stats.masteryQuality")} value={`${s.masteryQualityPct}%`} pct={s.masteryQualityPct} />
+          <MetricRow icon={ClipboardCheck} label={t("stats.examResults")} value={`${s.examResultsPct}%`} pct={s.examResultsPct} />
         </Group>
       </div>
 

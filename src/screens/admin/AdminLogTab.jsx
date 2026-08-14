@@ -33,7 +33,7 @@ export default function AdminLogTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getAdminLogs().then((data) => setLogs(data.logs)).finally(() => setLoading(false));
+    api.getAdminLogs().then((data) => setLogs(data.logs || [])).finally(() => setLoading(false));
   }, []);
 
   return (

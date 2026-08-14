@@ -240,7 +240,7 @@ export default function AdminPaymentsTab({ moderatorMode = false }) {
 
   function load() {
     setLoading(true);
-    api.getPayments(status).then((data) => setPayments(data.payments)).finally(() => setLoading(false));
+    api.getPayments(status).then((data) => setPayments(data.payments || [])).finally(() => setLoading(false));
   }
 
   useEffect(() => {

@@ -31,7 +31,7 @@ export default function ModeratorUsersTab() {
   useEffect(() => {
     const handle = setTimeout(() => {
       setLoading(true);
-      api.getModeratorUsers(query).then((data) => setUsers(data.users)).finally(() => setLoading(false));
+      api.getModeratorUsers(query).then((data) => setUsers(data.users || [])).finally(() => setLoading(false));
     }, 300);
     return () => clearTimeout(handle);
   }, [query]);

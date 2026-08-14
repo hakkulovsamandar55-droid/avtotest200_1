@@ -75,7 +75,7 @@ export default function AdminPanelScreen({ onBack, currentUserId, isSuperAdmin }
       setError("");
       api
         .searchUsers(query, filters)
-        .then((data) => setUsers(data.users))
+        .then((data) => setUsers(data.users || []))
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }, 300); // qidiruvni har harfda emas, yozish to'xtaganda yuborish

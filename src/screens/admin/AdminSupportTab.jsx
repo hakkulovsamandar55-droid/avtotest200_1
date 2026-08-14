@@ -186,7 +186,7 @@ export default function AdminSupportTab({ onOpenProfile }) {
     setLoading(true);
     api
       .getConversations({ ...(filter ? { status: filter } : {}), ...(query ? { query } : {}) })
-      .then((data) => setConversations(data.conversations))
+      .then((data) => setConversations(data.conversations || []))
       .finally(() => setLoading(false));
   }
 
